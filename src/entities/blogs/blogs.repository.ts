@@ -1,0 +1,117 @@
+import { Injectable } from '@nestjs/common';
+import mongoose, { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Blog, BlogDocument } from './domain/blogs.schema';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+
+@Injectable()
+export class BlogsRepository {
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
+  async createBlog(
+    name: string,
+    description: string,
+    websiteUrl: string,
+    isMembership: boolean,
+    createdAt: string,
+    userId: string,
+    login: string,
+  ) {
+    const blogQuery = `INSERT INTO "Blogs"
+                   (name, description, "isMembership", "websiteUrl", "createdAt")
+                   VALUES ($1, $2, $3, $4, $5)
+                   RETURNING *;`;
+
+    const banInfoQuery = `INSERT INTO "BlogBansInfo"
+                   ("blogId", "isBanned", "banDate")
+                   VALUES ($1, $2, $3)
+                   RETURNING *;`;
+    const blogOwnerQuery = `INSERT INTO "BlogOwnerInfo"
+                   ("blogId", "userId", "userLogin")
+                   VALUES ($1, $2, $3)
+                   RETURNING *;`;
+
+    const result = await this.dataSource.query(blogQuery, [
+      name,
+      description,
+      websiteUrl,
+      isMembership,
+      createdAt,
+    ]);
+    await this.dataSource.query(banInfoQuery, [result[0].id, false, null]);
+    await this.dataSource.query(blogOwnerQuery, [result[0].id, userId, login]);
+
+    return result[0];
+  }
+  async findBlogInstance(blogId: string) {
+    const blog = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "Blogs"
+          WHERE "id" = $1
+      `,
+      [blogId],
+    );
+    return blog[0];
+  }
+  async findBlogOwnerInfo(blogId: string) {
+    const blogOwnerInfo = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "BlogOwnerInfo"
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+    return blogOwnerInfo[0];
+  }
+  async updateBlog(blogId: string, name: string, description: string, websiteUrl: string) {
+    await this.dataSource.query(
+      `
+          UPDATE "Blogs"
+          SET "name"= '${name}', "description"= '${description}', "websiteUrl"= '${websiteUrl}'
+          WHERE "id" = $1
+      `,
+      [blogId],
+    );
+  }
+  async deleteBlog(blogId: string) {
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "BlogOwnerInfo"
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "BlogBansInfo"
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "Blogs"
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+  }
+
+  async findBlogsForUser(userId: string) {
+    const blogsInstances = await this.blogModel.find({ 'blogOwnerInfo.userId': userId }).lean();
+    const blogs = blogsInstances.map((blog) => blog._id.toString());
+    return blogs;
+  }
+
+  async save(instance: any) {
+    instance.save();
+  }
+}
