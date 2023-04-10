@@ -66,12 +66,61 @@ export class CommentsRepository {
     );
     return comment[0];
   }
+  async updateComment(commentId: string, content: string) {
+    await this.dataSource.query(
+      `
+          UPDATE "Comments"
+          SET "content"= '${content}'
+          WHERE "commentId" = $1
+      `,
+      [commentId],
+    );
+  }
+  async deleteComment(commentId: string) {
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "CommentatorInfo"
+          WHERE "commentId" = $1
+      `,
+      [commentId],
+    );
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "LikesInfo"
+          WHERE "commentId" = $1
+      `,
+      [commentId],
+    );
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "PostInfoForComment"
+          WHERE "commentId" = $1
+      `,
+      [commentId],
+    );
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "Comments"
+          WHERE "id" = $1
+      `,
+      [commentId],
+    );
+  }
   async findBannedComments(userId: string) {
-    const commentInstances = await this.commentModel
-      .find({ 'commentatorInfo.userId': userId })
-      .lean();
-    const comments = commentInstances.map((comment) => comment._id.toString());
-    return comments;
+    const commentsForUser = await this.dataSource.query(
+      `
+          SELECT "commentId"
+          FROM "CommentatorInfo"
+          WHERE "userId" = $1
+      `,
+      [userId],
+    );
+    const commentsIds = commentsForUser.map((comment) => comment.commentId.toString());
+    return commentsIds;
   }
 
   async save(instance: any) {

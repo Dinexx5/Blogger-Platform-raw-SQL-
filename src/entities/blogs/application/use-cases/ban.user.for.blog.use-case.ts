@@ -35,37 +35,39 @@ export class BanUserForBlogUseCase implements ICommandHandler<BanUserForBlogComm
     const ownerId = command.ownerId;
     const userId = command.userId;
     const inputModel = command.inputModel;
-    const blogInstance = await this.blogsRepository.findBlogInstance(inputModel.blogId);
-    if (!blogInstance) throw new NotFoundException();
-    if (blogInstance.blogOwnerInfo.userId !== ownerId) throw new ForbiddenException();
-    const userInstance = await this.usersRepository.findUserById(userId);
-    if (!userInstance) throw new NotFoundException();
-    const login = userInstance.accountData.login;
+    const blog = await this.blogsRepository.findBlogInstance(inputModel.blogId);
+    if (!blog) throw new NotFoundException();
+    const blogOwnerInfo = await this.blogsRepository.findBlogOwnerInfo(blog.id);
+    if (blogOwnerInfo.userId.toString() !== ownerId) throw new ForbiddenException();
+    const userToBan = await this.usersRepository.findUserById(userId);
+    if (!userToBan) throw new NotFoundException();
+    const login = userToBan.login;
     if (inputModel.isBanned === true) {
       const isBannedBefore = await this.usersBansForBlogsRepository.findBanByBlogAndUserId(
         inputModel.blogId,
         userId,
       );
       if (isBannedBefore) return;
-      const bannedPostsId = await this.postsRepository.findPostsForUser([inputModel.blogId]);
-      const banDto = {
+      const bannedPostsIds = await this.postsRepository.findPostsForUser([inputModel.blogId]);
+      const banDate = new Date().toISOString();
+      await this.usersBansForBlogsRepository.createBan(
         userId,
         login,
-        ...inputModel,
-        bannedPostsId,
-        banDate: new Date().toISOString(),
-      };
-      const banInstance = new this.banUserForBlogModel(banDto);
-      await this.usersBansForBlogsRepository.save(banInstance);
+        inputModel.blogId,
+        inputModel.isBanned,
+        inputModel.banReason,
+        banDate,
+        bannedPostsIds,
+      );
       return;
     }
-    const bananaInstance = await this.usersBansForBlogsRepository.findBanByBlogAndUserId(
+    const ban = await this.usersBansForBlogsRepository.findBanByBlogAndUserId(
       inputModel.blogId,
       userId,
     );
-    if (!bananaInstance) {
+    if (!ban) {
       return;
     }
-    await bananaInstance.deleteOne();
+    await this.usersBansForBlogsRepository.unbanUser(userId, inputModel.blogId);
   }
 }

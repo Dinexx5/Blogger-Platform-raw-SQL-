@@ -38,7 +38,11 @@ export class BloggerUsersController {
     @Param() param: blogParamModel,
   ) {
     const returnedUsers: paginatedViewModel<BannedForBlogUserViewModel[]> =
-      await this.bloggerQueryRepository.getAllUsers(paginationQuery, param.blogId, userId);
+      await this.bloggerQueryRepository.getAllBannedUsersForBlog(
+        paginationQuery,
+        param.blogId,
+        userId,
+      );
     return returnedUsers;
   }
 }

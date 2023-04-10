@@ -24,18 +24,13 @@ export class SaUsersQueryRepository {
 
     const skippedUsersCount = (+pageNumber - 1) * +pageSize;
 
-    const querys = `SELECT u.*, b."isBanned",b."banDate",b."banReason"
-                    FROM "Users" u
-                  
-                    LEFT JOIN "BanInfo" b
-                    ON u."id" = b."userId"
-                    WHERE (${
-                      banStatus && banStatus !== 'all'
-                        ? `
-                          ${banStatus === 'banned' ? `"isBanned" IS TRUE` : `"isBanned" IS FALSE`}
-                        `
-                        : '"isBanned" IS TRUE OR "isBanned" IS FALSE'
-                    }) AND (${
+    const subQuery = `(${
+      banStatus && banStatus !== 'all'
+        ? `
+          ${banStatus === 'banned' ? `"isBanned" IS TRUE` : `"isBanned" IS FALSE`}
+          `
+        : '"isBanned" IS TRUE OR "isBanned" IS FALSE'
+    }) AND (${
       searchLoginTerm && !searchEmailTerm
         ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'`
         : !searchLoginTerm && searchEmailTerm
@@ -44,22 +39,34 @@ export class SaUsersQueryRepository {
         ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%' 
                           OR  LOWER("email") LIKE '%' || LOWER('${searchEmailTerm}') || '%'`
         : true
-    })
+    })`;
+
+    const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason"
+                    FROM "Users" u
+                    LEFT JOIN "BanInfo" b
+                    ON u."id" = b."userId"
+                    WHERE ${subQuery}
                     ORDER BY 
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
-                    
                     LIMIT $2
                     OFFSET $3
                     `;
-
-    const counter = await this.dataSource.query('SELECT count(*) from "Users"');
+    const counterQuery = `SELECT COUNT(*)
+                    FROM "Users" u
+                    LEFT JOIN "BanInfo" b
+                    ON u."id" = b."userId"
+                    WHERE ${subQuery}`;
+    const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;
-    console.log(querys);
-    const users = await this.dataSource.query(querys, [sortDirection, pageSize, skippedUsersCount]);
+    const users = await this.dataSource.query(selectQuery, [
+      sortDirection,
+      pageSize,
+      skippedUsersCount,
+    ]);
     const usersView = users.map(this.mapDbUserToUserViewModel);
     return {
-      pagesCount: Math.ceil(count / +pageSize),
+      pagesCount: Math.ceil(+count / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +count,

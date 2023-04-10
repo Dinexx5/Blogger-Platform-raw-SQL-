@@ -103,26 +103,16 @@ export class PostsService {
   }
 
   async likePost(postId: string, likeStatus: string, userId: string): Promise<boolean> {
-    const postInstance = await this.postsRepository.findPostInstance(postId);
-    if (!postInstance) {
-      return false;
-    }
-    const userInstance = await this.usersRepository.findUserById(userId);
-    const likeInstance = await this.postsLikesRepository.findLikeByPostIdAndUserId(postId, userId);
-    if (!likeInstance) {
-      const likeDto = {
-        postId,
-        likeStatus,
-        userId,
-        login: userInstance.accountData.login,
-        createdAt: new Date().toISOString(),
-      };
-      const newLikeInstance = new this.postLikeModel(likeDto);
-      await this.postsLikesRepository.save(newLikeInstance);
+    const post = await this.postsRepository.findPostInstance(postId);
+    if (!post) return false;
+    const user = await this.usersRepository.findUserById(userId);
+    const like = await this.postsLikesRepository.findLikeByPostIdAndUserId(postId, userId);
+    if (!like) {
+      const createdAt = new Date().toISOString();
+      await this.postsLikesRepository.likePost(postId, likeStatus, userId, user.login, createdAt);
       return true;
     }
-    likeInstance.likeStatus = likeStatus;
-    await this.postsLikesRepository.save(likeInstance);
+    await this.postsLikesRepository.updateLikeStatus(postId, userId, likeStatus);
     return true;
   }
 }

@@ -26,14 +26,18 @@ export class BansRepository {
   }
   async createBan(banDto: createBanModel) {
     const banQuery = `INSERT INTO "UserBans"
-                   ("userId", login, "isBanned", "banReason")
-                   VALUES ($1, $2, $3, $4)
+                   ("userId", login, "isBanned", "banReason",
+                    "bannedBlogsIds", "bannedPostsIds", "bannedCommentsIds")
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)
                    RETURNING *;`;
     const ban = await this.dataSource.query(banQuery, [
       banDto.userId,
       banDto.login,
       banDto.isBanned,
       banDto.banReason,
+      banDto.bannedBlogsIds,
+      banDto.bannedPostsIds,
+      banDto.bannedCommentsIds,
     ]);
     return ban[0];
   }
@@ -48,10 +52,13 @@ export class BansRepository {
     );
   }
   async countBannedUsers() {
-    return this.banModel.countDocuments({});
+    const counterQuery = `SELECT COUNT(*)
+                    FROM "UserBans" `;
+    const counter = await this.dataSource.query(counterQuery);
+    return counter[0].count;
   }
   async getBannedUsers() {
-    const allBans = await this.banModel.find({}).lean();
+    const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedUsers = [];
     allBans.forEach((ban) => {
       bannedUsers.push(ban.userId);
@@ -61,39 +68,31 @@ export class BansRepository {
   async getBannedBlogs() {
     const bannedUsersCount = await this.countBannedUsers();
     if (!bannedUsersCount) return [];
-    const allBans = await this.banModel.find({}).lean();
+    const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedBlogs = [];
     allBans.forEach((ban) => {
       bannedBlogs.push(...ban.bannedBlogsId);
     });
-    const bannedBlogsObjId = bannedBlogs.map((blogId) => new mongoose.Types.ObjectId(blogId));
-    return bannedBlogsObjId;
+    return bannedBlogs;
   }
   async getBannedPosts() {
     const bannedUsersCount = await this.countBannedUsers();
     if (!bannedUsersCount) return [];
-    const allBans = await this.banModel.find({}).lean();
+    const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedPosts = [];
     allBans.forEach((ban) => {
       bannedPosts.push(...ban.bannedPostsId);
     });
-    const bannedPostsObjId = bannedPosts.map((postId) => new mongoose.Types.ObjectId(postId));
-    return bannedPostsObjId;
+    return bannedPosts;
   }
   async getBannedComments() {
     const bannedUsersCount = await this.countBannedUsers();
     if (!bannedUsersCount) return [];
-    const allBans = await this.banModel.find({}).lean();
+    const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedComments = [];
     allBans.forEach((ban) => {
       bannedComments.push(...ban.bannedCommentsId);
     });
-    const bannedCommentsObjId = bannedComments.map(
-      (commentId) => new mongoose.Types.ObjectId(commentId),
-    );
-    return bannedCommentsObjId;
-  }
-  async save(instance: any) {
-    instance.save();
+    return bannedComments;
   }
 }

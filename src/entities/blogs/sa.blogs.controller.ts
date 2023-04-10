@@ -31,8 +31,8 @@ export class SuperAdminBlogsController {
 
   @UseGuards(AuthGuard)
   @Put(':blogId/bind-with-user/:userId')
-  async updateBlog(@Param() params: blogAndUserParamModel, @Res() res: Response) {
-    await this.superAdminBlogService.UpdateBlogById(params.blogId, params.userId);
+  async bindBlog(@Param() params: blogAndUserParamModel, @Res() res: Response) {
+    await this.superAdminBlogService.bindBlog(params.blogId, params.userId);
     return res.sendStatus(204);
   }
   @UseGuards(AuthGuard)

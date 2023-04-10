@@ -78,6 +78,36 @@ export class BlogsRepository {
       [blogId],
     );
   }
+  async updateBanInfoForBan(blogId: string, banDate: string) {
+    await this.dataSource.query(
+      `
+          UPDATE "BlogBansInfo"
+          SET "isBanned"= true, "banDate"= '${banDate}'}
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+  }
+  async updateBanInfoForUnban(blogId: string) {
+    await this.dataSource.query(
+      `
+          UPDATE "BlogBansInfo"
+          SET "isBanned"= false, "banDate"= null}
+          WHERE "blogId" = $1
+      `,
+      [blogId],
+    );
+  }
+  async bindBlogWithUser(blogId: string, userId: string, login: string) {
+    await this.dataSource.query(
+      `
+          UPDATE "BlogOwnerInfo"
+          SET "userId"= $2, "userLogin"= $3}
+          WHERE "blogId" = $1
+      `,
+      [blogId, userId, login],
+    );
+  }
   async deleteBlog(blogId: string) {
     await this.dataSource.query(
       `
@@ -106,9 +136,16 @@ export class BlogsRepository {
   }
 
   async findBlogsForUser(userId: string) {
-    const blogsInstances = await this.blogModel.find({ 'blogOwnerInfo.userId': userId }).lean();
-    const blogs = blogsInstances.map((blog) => blog._id.toString());
-    return blogs;
+    const blogsForUser = await this.dataSource.query(
+      `
+          SELECT "blogId"
+          FROM "BlogOwnerInfo"
+          WHERE "userId" = $1
+      `,
+      [userId],
+    );
+    const blogsIds = blogsForUser.map((blog) => blog.blogId.toString());
+    return blogsIds;
   }
 
   async save(instance: any) {

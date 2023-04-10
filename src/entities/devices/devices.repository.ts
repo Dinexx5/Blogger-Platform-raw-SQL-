@@ -18,7 +18,7 @@ export class DevicesRepository {
                    ("userId", ip, title, "lastActiveDate", "deviceId")
                    VALUES ($1, $2, $3, $4, $5)
                    RETURNING *;`;
-    const device = await this.dataSource.query(deviceQuery, [
+    await this.dataSource.query(deviceQuery, [
       deviceDto.userId,
       deviceDto.ip,
       deviceDto.title,
@@ -26,12 +26,16 @@ export class DevicesRepository {
       deviceDto.deviceId,
     ]);
   }
-  async findDeviceById(deviceId: string) {
-    return this.deviceModel.findOne({ deviceId: deviceId });
-  }
   async findSessions(userId: string) {
-    const _id = new mongoose.Types.ObjectId(userId);
-    return this.deviceModel.find({ userId: _id });
+    const devices = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "Devices"
+          WHERE "userId" = $1
+      `,
+      [userId],
+    );
+    return devices;
   }
   async deleteDevicesForBan(userId: string) {
     await this.dataSource.query(
@@ -43,10 +47,15 @@ export class DevicesRepository {
       [userId],
     );
   }
-  async deleteAllSessionsWithoutActive(deviceId: string, userId: mongoose.Types.ObjectId) {
-    await this.deviceModel.deleteMany({
-      $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }],
-    });
+  async deleteAllSessionsWithoutActive(deviceId: string, userId: string) {
+    await this.dataSource.query(
+      `
+          DELETE
+          FROM "Devices"
+          WHERE "deviceId" = $1 AND "userId" = $2
+      `,
+      [deviceId, userId],
+    );
   }
   async findSessionByDeviceId(deviceId: string) {
     const device = await this.dataSource.query(

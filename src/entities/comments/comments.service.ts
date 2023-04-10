@@ -57,39 +57,27 @@ export class CommentsService {
     if (!comment) throw new NotFoundException();
     const commentatorInfo = await this.commentsRepository.findCommentatorInfo(commentId);
     if (commentatorInfo.userId.toString() !== userId) throw new ForbiddenException();
-    comment.content = inputModel.content;
-    await this.commentsRepository.save(comment);
+    await this.commentsRepository.updateComment(commentId, inputModel.content);
   }
 
   async deleteCommentById(commentId: string, userId: string) {
     const commentInstance = await this.commentsRepository.findComment(commentId);
     if (!commentInstance) throw new NotFoundException();
-    if (commentInstance.commentatorInfo.userId !== userId) throw new ForbiddenException();
-    await commentInstance.deleteOne();
+    const commentatorInfo = await this.commentsRepository.findCommentatorInfo(commentId);
+    if (commentatorInfo.userId.toString() !== userId) throw new ForbiddenException();
+    await this.commentsRepository.deleteComment(commentId);
   }
 
   async likeComment(commentId: string, likeStatus: string, userId: string): Promise<boolean> {
-    const commentInstance = await this.commentsRepository.findComment(commentId);
-    if (!commentInstance) {
-      return false;
-    }
-    const likeInstance = await this.commentsLikesRepository.findLikeByCommentIdAndUserId(
-      commentId,
-      userId,
-    );
-    if (!likeInstance) {
-      const likeDto = {
-        commentId,
-        likeStatus,
-        userId,
-        createdAt: new Date().toISOString(),
-      };
-      const newLikeInstance = new this.commentLikeModel(likeDto);
-      await this.commentsLikesRepository.save(newLikeInstance);
+    const comment = await this.commentsRepository.findComment(commentId);
+    if (!comment) return false;
+    const like = await this.commentsLikesRepository.findLikeByCommentIdAndUserId(commentId, userId);
+    if (!like) {
+      const createdAt = new Date().toISOString();
+      await this.commentsLikesRepository.likeComment(commentId, likeStatus, userId, createdAt);
       return true;
     }
-    likeInstance.likeStatus = likeStatus;
-    await this.commentsLikesRepository.save(likeInstance);
+    await this.commentsLikesRepository.updateLikeStatus(commentId, userId, likeStatus);
     return true;
   }
 }

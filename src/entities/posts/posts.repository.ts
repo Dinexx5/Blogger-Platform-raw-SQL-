@@ -72,7 +72,7 @@ export class PostsRepository {
       `
           DELETE
           FROM "Posts"
-          WHERE "postId" = $1
+          WHERE "id" = $1
       `,
       [postId],
     );
@@ -94,10 +94,17 @@ export class PostsRepository {
       [postId],
     );
   }
-  async findPostsForUser(bannedBlogs: string[]) {
-    const postInstances = await this.postModel.find({ blogId: { $in: bannedBlogs } }).lean();
-    const posts = postInstances.map((post) => post._id.toString());
-    return posts;
+  async findPostsForUser(bannedBlog: string[]) {
+    const bannedBlogsStrings = bannedBlog.join();
+    const posts = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "Posts"
+          WHERE "blogId" IN ($1)
+      `,
+      [bannedBlogsStrings],
+    );
+    return posts.map((post) => post.id.toString());
   }
 
   async save(instance: any) {

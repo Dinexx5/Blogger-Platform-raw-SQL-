@@ -12,12 +12,8 @@ export class SuperAdminBlogsService {
     protected usersRepository: UsersRepository,
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
   ) {}
-  async UpdateBlogById(blogId: string, userId: string) {
-    const blogInstance = await this.blogsRepository.findBlogInstance(blogId);
-    const userInstance = await this.usersRepository.findUserById(userId);
-    blogInstance.blogOwnerInfo.userId = userId;
-    blogInstance.blogOwnerInfo.userLogin = userInstance.accountData.login;
-    blogInstance.markModified('blogOwnerInfo');
-    await this.blogsRepository.save(blogInstance);
+  async bindBlog(blogId: string, userId: string) {
+    const user = await this.usersRepository.findUserById(userId);
+    await this.blogsRepository.bindBlogWithUser(blogId, userId, user.login);
   }
 }

@@ -41,13 +41,16 @@ export class BansUserUseCase implements ICommandHandler<BansUserCommand> {
       await this.usersRepository.updateBanInfoForBan(userId, banDate, inputModel.banReason);
       await this.devicesRepository.deleteDevicesForBan(userId);
       await this.tokensRepository.deleteTokensForBan(userId);
-      // const bannedBlogsId = await this.blogsRepository.findBlogsForUser(userId);
-      // const bannedPostsId = await this.postsRepository.findPostsForUser(bannedBlogsId);
-      // const bannedCommentsId = await this.commentsRepository.findBannedComments(userId);
+      const bannedBlogsIds = await this.blogsRepository.findBlogsForUser(userId);
+      const bannedPostsIds = await this.postsRepository.findPostsForUser(bannedBlogsIds);
+      const bannedCommentsIds = await this.commentsRepository.findBannedComments(userId);
       const banDto = {
         userId,
         login,
         ...inputModel,
+        bannedBlogsIds,
+        bannedPostsIds,
+        bannedCommentsIds,
       };
       await this.bansRepository.createBan(banDto);
       return;

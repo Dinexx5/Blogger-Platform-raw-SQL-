@@ -24,8 +24,10 @@ export class DevicesController {
   @UseGuards(JwtRefreshAuthGuard)
   @Delete('')
   async deleteAllSessions(@CurrentUser() userTokenMeta, @Res() res: Response) {
-    const userId = new mongoose.Types.ObjectId(userTokenMeta.userId);
-    await this.devicesRepository.deleteAllSessionsWithoutActive(userTokenMeta.deviceId, userId);
+    await this.devicesRepository.deleteAllSessionsWithoutActive(
+      userTokenMeta.deviceId,
+      userTokenMeta.userId,
+    );
     return res.sendStatus(204);
   }
 
@@ -36,8 +38,7 @@ export class DevicesController {
     @Param('id') deviceId: string,
     @Res() res: Response,
   ) {
-    const userId = new mongoose.Types.ObjectId(userTokenMeta.userId);
-    const status = await this.devicesService.deleteSessionById(userId, deviceId);
-    return res.sendStatus(+status);
+    await this.devicesService.deleteSessionById(userTokenMeta.userId, deviceId);
+    return res.sendStatus(204);
   }
 }

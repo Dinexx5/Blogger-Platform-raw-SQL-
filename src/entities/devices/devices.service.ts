@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import mongoose, { Model, ObjectId } from 'mongoose';
 import { DevicesRepository } from './devices.repository';
 import { Device, DeviceDocument, deviceViewModel } from './devices.schema';
@@ -10,7 +10,6 @@ export class DevicesService {
     protected devicesRepository: DevicesRepository,
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
-  filter: { status: string } = { status: '204' };
   async createDevice(
     userId: string,
     ip: string,
@@ -25,29 +24,21 @@ export class DevicesService {
       deviceId: deviceId,
       lastActiveDate: issuedAt,
     };
-    const createdDevice = await this.devicesRepository.createDevice(deviceDTO);
+    await this.devicesRepository.createDevice(deviceDTO);
   }
   async findActiveDevices(userId: string): Promise<deviceViewModel[]> {
     const foundDevices = await this.devicesRepository.findSessions(userId);
-    return foundDevices.map((device: DeviceDocument) => ({
+    return foundDevices.map((device) => ({
       ip: device.ip,
       title: device.title,
       lastActiveDate: device.lastActiveDate,
       deviceId: device.deviceId,
     }));
   }
-  async deleteSessionById(userId: mongoose.Types.ObjectId, deviceId: string) {
+  async deleteSessionById(userId: string, deviceId: string) {
     const foundDevice = await this.devicesRepository.findSessionByDeviceId(deviceId);
-    if (!foundDevice) {
-      this.filter.status = '404';
-      return this.filter.status;
-    }
-    if (foundDevice.userId.toString() !== userId.toString()) {
-      this.filter.status = '403';
-      return this.filter.status;
-    }
-    await foundDevice.deleteOne();
-    this.filter.status = '204';
-    return this.filter.status;
+    if (!foundDevice) throw new NotFoundException();
+    if (foundDevice.userId.toString() !== userId) throw new ForbiddenException();
+    await this.devicesRepository.deleteDevice(deviceId);
   }
 }
