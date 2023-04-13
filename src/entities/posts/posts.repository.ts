@@ -7,10 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostsRepository {
-  constructor(
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createPost(
     title: string,
     shortDescription: string,
@@ -105,9 +102,5 @@ export class PostsRepository {
       [bannedBlogsStrings],
     );
     return posts.map((post) => post.id.toString());
-  }
-
-  async save(instance: any) {
-    instance.save();
   }
 }

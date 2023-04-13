@@ -37,8 +37,8 @@ export class BlogsRepository {
     const result = await this.dataSource.query(blogQuery, [
       name,
       description,
-      websiteUrl,
       isMembership,
+      websiteUrl,
       createdAt,
     ]);
     await this.dataSource.query(banInfoQuery, [result[0].id, false, null]);

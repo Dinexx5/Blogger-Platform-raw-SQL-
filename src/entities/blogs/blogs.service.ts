@@ -24,7 +24,7 @@ export class BlogsService {
       inputModel.websiteUrl,
       isMembership,
       createdAt,
-      user.id.toISOString(),
+      user.id.toString(),
       user.login,
     );
     return {

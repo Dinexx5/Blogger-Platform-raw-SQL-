@@ -71,7 +71,7 @@ export class BansRepository {
     const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedBlogs = [];
     allBans.forEach((ban) => {
-      bannedBlogs.push(...ban.bannedBlogsId);
+      bannedBlogs.push(...ban.bannedBlogsIds);
     });
     return bannedBlogs;
   }
@@ -81,7 +81,7 @@ export class BansRepository {
     const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedPosts = [];
     allBans.forEach((ban) => {
-      bannedPosts.push(...ban.bannedPostsId);
+      bannedPosts.push(...ban.bannedPostsIds);
     });
     return bannedPosts;
   }
@@ -91,7 +91,7 @@ export class BansRepository {
     const allBans = await this.dataSource.query(`SELECT * FROM "UserBans"`);
     const bannedComments = [];
     allBans.forEach((ban) => {
-      bannedComments.push(...ban.bannedCommentsId);
+      bannedComments.push(...ban.bannedCommentsIds);
     });
     return bannedComments;
   }

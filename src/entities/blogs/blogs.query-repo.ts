@@ -24,7 +24,7 @@ export class BlogsQueryRepository {
       websiteUrl: blog.websiteUrl,
       isMembership: blog.isMembership,
       createdAt: blog.createdAt,
-      id: blog._id.toString(),
+      id: blog.id.toString(),
     };
   }
   async getAllBlogs(
@@ -44,9 +44,10 @@ export class BlogsQueryRepository {
     const bannedBlogsFromUsers = await this.bansRepository.getBannedBlogs();
     const bannedBlogs = await this.blogBansRepository.getBannedBlogs();
     const allBannedBlogs = bannedBlogs.concat(bannedBlogsFromUsers);
-    const allBannedBlogsString = allBannedBlogs.join();
 
-    const subQuery = `"id" NOT IN ('${allBannedBlogsString}') AND (${
+    const subQuery = `"id" ${
+      allBannedBlogs.length ? `NOT IN (${allBannedBlogs})` : `IS NOT NULL`
+    } AND (${
       searchNameTerm && !userId
         ? `LOWER("name") LIKE '%' || LOWER('${searchNameTerm}') || '%'`
         : userId && !searchNameTerm
@@ -56,6 +57,7 @@ export class BlogsQueryRepository {
          "userId" = ${userId}`
         : true
     })`;
+
     const selectQuery = `SELECT b.*, o."userId"
                     FROM "Blogs" b
                     LEFT JOIN "BlogOwnerInfo" o
@@ -72,6 +74,8 @@ export class BlogsQueryRepository {
                     LEFT JOIN "BlogOwnerInfo" o
                     ON b."id" = o."blogId"
                     WHERE ${subQuery}`;
+
+    console.log(subQuery);
 
     const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;
@@ -103,8 +107,8 @@ export class BlogsQueryRepository {
       `,
       [blogId],
     );
-    if (!foundBlog) return null;
-    if (allBannedBlogs.includes(foundBlog.id.toString())) return null;
-    return this.mapFoundBlogToBlogViewModel(foundBlog);
+    if (!foundBlog.length) return null;
+    if (allBannedBlogs.includes(foundBlog[0].id.toString())) return null;
+    return this.mapFoundBlogToBlogViewModel(foundBlog[0]);
   }
 }

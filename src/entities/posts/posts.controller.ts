@@ -28,7 +28,7 @@ export class PostsController {
   @UseGuards(GetUserGuard)
   @Get(':id')
   async getPost(@CurrentUser() userId, @Param('id') id: string, @Res() res: Response) {
-    const post: PostViewModel | null = await this.postsQueryRepository.findPostById(id, userId);
+    const post = await this.postsQueryRepository.findPostById(id, userId);
     if (!post) {
       return res.sendStatus(404);
     }
@@ -42,7 +42,7 @@ export class PostsController {
     @Query() paginationQuery: paginationQuerys,
     @Res() res: Response,
   ) {
-    const foundPost: PostViewModel | null = await this.postsQueryRepository.findPostById(postId);
+    const foundPost = await this.postsQueryRepository.findPostById(postId);
     if (!foundPost) {
       return res.sendStatus(404);
     }

@@ -62,7 +62,7 @@ export class BlogBansRepository {
     const allBans = await this.dataSource.query(`SELECT * FROM "BlogBans"`);
     const bannedPosts = [];
     allBans.forEach((ban) => {
-      bannedPosts.push(...ban.bannedPostsId);
+      bannedPosts.push(...ban.bannedPostsIds);
     });
     return bannedPosts;
   }

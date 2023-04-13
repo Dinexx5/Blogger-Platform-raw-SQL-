@@ -5,10 +5,12 @@ import mongoose, { Model } from 'mongoose';
 import { BansRepository } from '../bans/bans.repository';
 import { PostsLikesRepository } from '../likes/posts.likes.repository';
 import { BlogBansRepository } from '../bans/bans.blogs.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 function mapperToPostViewModel(post: PostDocument): PostViewModel {
   return {
-    id: post._id.toString(),
+    id: post.id.toString(),
     title: post.title,
     shortDescription: post.shortDescription,
     content: post.content,
@@ -30,6 +32,7 @@ export class PostsQueryRepository {
     protected postsLikesRepository: PostsLikesRepository,
     protected blogBansRepository: BlogBansRepository,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
   async getAllPosts(
     query: paginationQuerys,
@@ -38,39 +41,42 @@ export class PostsQueryRepository {
   ): Promise<paginatedViewModel<PostViewModel[]>> {
     const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
 
-    const sortDirectionNumber: 1 | -1 = sortDirection === 'desc' ? -1 : 1;
     const skippedPostsNumber = (+pageNumber - 1) * +pageSize;
     const bannedPostsFromUsers = await this.bansRepository.getBannedPosts();
     const bannedPosts = await this.blogBansRepository.getBannedPosts();
     const allBannedPosts = bannedPosts.concat(bannedPostsFromUsers);
 
-    const filter = { _id: { $nin: allBannedPosts } } as {
-      _id: { $nin: mongoose.Types.ObjectId[] };
-      blogId?: { $regex: string };
-    };
-    if (blogId) {
-      filter.blogId = { $regex: blogId };
-    }
+    const subQuery = `"id" ${allBannedPosts.length ? `NOT IN (${allBannedPosts})` : `IS NOT NULL`} 
+    AND (${blogId ? `"blogId" = ${blogId}` : true})`;
 
-    const countAll = await this.postModel.countDocuments(filter);
+    const selectQuery = `SELECT *
+                    FROM "Posts"
+                    WHERE ${subQuery}
+                    ORDER BY 
+                      CASE when $1 = 'desc' then "${sortBy}" END DESC,
+                      CASE when $1 = 'asc' then "${sortBy}" END ASC
+                    LIMIT $2
+                    OFFSET $3
+                    `;
+    const counterQuery = `SELECT COUNT(*)
+                    FROM "Posts" 
+                    WHERE ${subQuery}`;
 
-    const postsDb = await this.postModel
-      .find(filter)
-      .sort({
-        [sortBy]: sortDirectionNumber,
-        title: sortDirectionNumber,
-        id: sortDirectionNumber,
-      })
-      .skip(skippedPostsNumber)
-      .limit(+pageSize);
-    await this.countLikesForPosts(postsDb, userId);
+    const counter = await this.dataSource.query(counterQuery);
+    const count = counter[0].count;
+    const posts = await this.dataSource.query(selectQuery, [
+      sortDirection,
+      pageSize,
+      skippedPostsNumber,
+    ]);
+    await this.countLikesForPosts(posts, userId);
 
-    const postsView = postsDb.map(mapperToPostViewModel);
+    const postsView = posts.map(mapperToPostViewModel);
     return {
-      pagesCount: Math.ceil(countAll / +pageSize),
+      pagesCount: Math.ceil(+count / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: countAll,
+      totalCount: +count,
       items: postsView,
     };
   }
@@ -114,18 +120,22 @@ export class PostsQueryRepository {
   }
 
   async findPostById(postId: string, userId?: string | null): Promise<PostViewModel | null> {
-    const _id = new mongoose.Types.ObjectId(postId);
     const bannedPostsFromUsers = await this.bansRepository.getBannedPosts();
     const bannedPosts = await this.blogBansRepository.getBannedPosts();
     const allBannedPosts = bannedPosts.concat(bannedPostsFromUsers);
     const bannedPostsStrings = allBannedPosts.map((postId) => postId.toString());
-    const foundPost: PostDocument | null = await this.postModel.findOne({
-      _id: _id,
-    });
-    if (!foundPost) {
+    const foundPost = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "Posts"
+          WHERE "id" = $1
+      `,
+      [postId],
+    );
+    if (!foundPost.length) {
       return null;
     }
-    if (bannedPostsStrings.includes(foundPost._id.toString())) {
+    if (bannedPostsStrings.includes(foundPost[0].id.toString())) {
       return null;
     }
     await this.countLikesForPost(foundPost, userId);

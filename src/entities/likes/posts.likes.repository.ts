@@ -49,14 +49,26 @@ export class PostsLikesRepository {
   }
   async findLikesForPost(postId: string) {
     const bannedUsers = await this.bansRepository.getBannedUsers();
-    return this.postLikeModel.find({ postId: postId, userId: { $nin: bannedUsers } });
+    const likes = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "PostsLikes"
+          WHERE "postId" = $1 AND "userId" NOT IN ${bannedUsers}
+      `,
+      [postId],
+    );
+    return likes;
   }
   async findThreeLatestLikes(postId: string) {
     const bannedUsers = await this.bansRepository.getBannedUsers();
-    const allLikes = await this.postLikeModel
-      .find({ postId: postId, userId: { $nin: bannedUsers } })
-      .sort({ createdAt: -1 })
-      .lean();
+    const allLikes = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "PostsLikes"
+          WHERE "postId" = $1 AND "userId" NOT IN ${bannedUsers}
+      `,
+      [postId],
+    );
     const threeLatestLikes = allLikes.slice(0, 3);
     const mappedThreeLatestLikes = threeLatestLikes.map((like) => {
       return {
@@ -66,8 +78,5 @@ export class PostsLikesRepository {
       };
     });
     return mappedThreeLatestLikes;
-  }
-  async save(instance: any) {
-    instance.save();
   }
 }

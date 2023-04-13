@@ -48,7 +48,7 @@ export class BlogsSAQueryRepository {
                     LEFT JOIN "BlogOwnerInfo" o
                     ON blog."id" = o."blogId"
                     LEFT JOIN "BlogBansInfo" ban
-                    ON blog."id" = o."blogId"
+                    ON blog."id" = ban."blogId"
                     WHERE ${subQuery}
                     ORDER BY 
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,

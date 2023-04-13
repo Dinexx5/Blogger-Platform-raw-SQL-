@@ -75,7 +75,7 @@ export class PostsService {
     await this.postsRepository.deletePost(postId);
   }
 
-  async UpdatePostById(postBody: updatePostModel, postId: string, blogId: string, userId: string) {
+  async updatePostById(postBody: updatePostModel, postId: string, blogId: string, userId: string) {
     const blog = await this.blogsRepository.findBlogInstance(blogId);
     if (!blog) throw new NotFoundException();
     const blogOwnerInfo = await this.blogsRepository.findBlogOwnerInfo(blogId);
