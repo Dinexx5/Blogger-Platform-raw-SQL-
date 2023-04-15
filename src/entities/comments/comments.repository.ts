@@ -7,10 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createComment(
     content: string,
     createdAt: string,
@@ -34,7 +31,7 @@ export class CommentsRepository {
                    VALUES ($1, $2, $3, $4)
                    RETURNING *;`;
     const postInfoQuery = `INSERT INTO "PostInfoForComment"
-                   ("commentId", id, title, "blogId", "blogName")
+                   ("commentId", "postId", title, "blogId", "blogName")
                    VALUES ($1, $2, $3, $4, $5)
                    RETURNING *;`;
 

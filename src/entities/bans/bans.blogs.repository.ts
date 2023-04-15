@@ -1,17 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { Ban, BanDocument, BlogBan, BlogBanDocument } from './application/domain/bans.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { createBanModel } from './bans.models';
 
 @Injectable()
 export class BlogBansRepository {
-  constructor(
-    @InjectModel(BlogBan.name) private blogBanModel: Model<BlogBanDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createBan(blogId: string, isBanned: boolean, bannedPostsIds: string[]) {
     const banQuery = `INSERT INTO "BlogBans"
                    ("blogId", "isBanned", "bannedPostsIds")
@@ -23,7 +16,7 @@ export class BlogBansRepository {
     await this.dataSource.query(
       `
           DELETE
-          FROM "BlogBansInfo"
+          FROM "BlogBans"
           WHERE "blogId" = $1
       `,
       [blogId],

@@ -14,7 +14,6 @@ export class BlogsQueryRepository {
   constructor(
     protected bansRepository: BansRepository,
     protected blogBansRepository: BlogBansRepository,
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   mapFoundBlogToBlogViewModel(blog): BlogViewModel {

@@ -10,7 +10,6 @@ import { DataSource } from 'typeorm';
 export class CommentsLikesRepository {
   constructor(
     protected bansRepository: BansRepository,
-    @InjectModel(CommentLike.name) private commentLikeModel: Model<CommentLikeDocument>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   async likeComment(commentId: string, likeStatus: string, userId: string, createdAt: string) {
@@ -43,9 +42,14 @@ export class CommentsLikesRepository {
   }
   async findLikesForComment(commentId: string) {
     const bannedUsers = await this.bansRepository.getBannedUsers();
-    return this.commentLikeModel.find({ commentId: commentId, userId: { $nin: bannedUsers } });
-  }
-  async save(instance: any) {
-    instance.save();
+    const likes = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "CommentsLikes"
+          WHERE "commentId" = $1 AND "userId" NOT IN (${bannedUsers})
+      `,
+      [commentId],
+    );
+    return likes;
   }
 }

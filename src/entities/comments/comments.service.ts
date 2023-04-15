@@ -16,8 +16,6 @@ export class CommentsService {
     protected postsRepository: PostsRepository,
     protected usersRepository: UsersRepository,
     protected commentsLikesRepository: CommentsLikesRepository,
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectModel(CommentLike.name) private commentLikeModel: Model<CommentLikeDocument>,
   ) {}
   async createComment(
     postId: string,

@@ -4,7 +4,6 @@ import { JwtAccessAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Response } from 'express';
 import { UsersRepository } from '../users/users.repository';
-import { UserDocument } from '../users/users.schema';
 import {
   ConfirmEmailModel,
   CreateUserModel,
@@ -15,7 +14,6 @@ import {
 } from '../users/userModels';
 import { RateLimitGuard } from './guards/rate-limit.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
-import mongoose from 'mongoose';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 @Controller('auth')
 export class AuthController {
@@ -33,7 +31,7 @@ export class AuthController {
     const refreshToken = await this.authService.createJwtRefreshToken(userId, deviceName, ip);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
     });
     res.status(200).json({ accessToken: accessToken });
   }
@@ -57,7 +55,7 @@ export class AuthController {
     const newRefreshToken = await this.authService.updateJwtRefreshToken(deviceId, exp, userId);
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
     });
     res.status(200).json({ accessToken: newAccessToken });
   }

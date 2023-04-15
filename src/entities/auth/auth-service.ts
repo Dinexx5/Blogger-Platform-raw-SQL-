@@ -28,8 +28,6 @@ export class AuthService {
     protected devicesService: DevicesService,
     protected devicesRepository: DevicesRepository,
     protected bansRepository: BansRepository,
-    @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
-    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {

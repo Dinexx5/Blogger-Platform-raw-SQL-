@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from './domain/blogs.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createBlog(
     name: string,
     description: string,
@@ -82,7 +76,7 @@ export class BlogsRepository {
     await this.dataSource.query(
       `
           UPDATE "BlogBansInfo"
-          SET "isBanned"= true, "banDate"= '${banDate}'}
+          SET "isBanned"= true, "banDate"= '${banDate}'
           WHERE "blogId" = $1
       `,
       [blogId],
@@ -92,7 +86,7 @@ export class BlogsRepository {
     await this.dataSource.query(
       `
           UPDATE "BlogBansInfo"
-          SET "isBanned"= false, "banDate"= null}
+          SET "isBanned"= false, "banDate"= null
           WHERE "blogId" = $1
       `,
       [blogId],
@@ -102,7 +96,7 @@ export class BlogsRepository {
     await this.dataSource.query(
       `
           UPDATE "BlogOwnerInfo"
-          SET "userId"= $2, "userLogin"= $3}
+          SET "userId"= $2, "userLogin"= $3
           WHERE "blogId" = $1
       `,
       [blogId, userId, login],
@@ -146,9 +140,5 @@ export class BlogsRepository {
     );
     const blogsIds = blogsForUser.map((blog) => blog.blogId.toString());
     return blogsIds;
-  }
-
-  async save(instance: any) {
-    instance.save();
   }
 }

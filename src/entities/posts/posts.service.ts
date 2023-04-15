@@ -26,8 +26,6 @@ export class PostsService {
     protected usersRepository: UsersRepository,
     protected postsLikesRepository: PostsLikesRepository,
     protected usersBansForBlogsRepo: UsersBansForBlogRepository,
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectModel(PostLike.name) private postLikeModel: Model<PostLikeDocument>,
   ) {}
 
   async createPost(
@@ -44,12 +42,12 @@ export class PostsService {
       postBody.title,
       postBody.shortDescription,
       postBody.content,
-      blog.id.toISOString(),
+      blogId,
       blog.name,
       createdAt,
     );
     return {
-      id: createdPost._id.toString(),
+      id: createdPost.id.toString(),
       title: createdPost.title,
       shortDescription: createdPost.shortDescription,
       content: createdPost.content,
@@ -98,7 +96,7 @@ export class PostsService {
     const post = await this.postsRepository.findPostInstance(postId);
     if (!post) return null;
     const forbiddenPosts = await this.usersBansForBlogsRepo.getBannedPostsForUser(userId);
-    if (forbiddenPosts.includes(post._id.toString())) throw new ForbiddenException();
+    if (forbiddenPosts.includes(post.id.toString())) throw new ForbiddenException();
     return await this.commentsService.createComment(postId, inputModel, userId);
   }
 

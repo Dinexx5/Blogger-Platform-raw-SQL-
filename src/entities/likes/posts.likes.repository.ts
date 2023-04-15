@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { PostLike, PostLikeDocument } from './posts.like.schema';
 import { BansRepository } from '../bans/bans.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -10,7 +7,6 @@ import { DataSource } from 'typeorm';
 export class PostsLikesRepository {
   constructor(
     protected bansRepository: BansRepository,
-    @InjectModel(PostLike.name) private postLikeModel: Model<PostLikeDocument>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   async likePost(
@@ -49,14 +45,14 @@ export class PostsLikesRepository {
   }
   async findLikesForPost(postId: string) {
     const bannedUsers = await this.bansRepository.getBannedUsers();
-    const likes = await this.dataSource.query(
-      `
+    const query = `
           SELECT *
           FROM "PostsLikes"
-          WHERE "postId" = $1 AND "userId" NOT IN ${bannedUsers}
-      `,
-      [postId],
-    );
+          WHERE "postId" = $1 AND "userId" ${
+            bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`
+          }
+      `;
+    const likes = await this.dataSource.query(query, [postId]);
     return likes;
   }
   async findThreeLatestLikes(postId: string) {
@@ -65,7 +61,9 @@ export class PostsLikesRepository {
       `
           SELECT *
           FROM "PostsLikes"
-          WHERE "postId" = $1 AND "userId" NOT IN ${bannedUsers}
+          WHERE "postId" = $1 AND "userId" ${
+            bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`
+          }
       `,
       [postId],
     );

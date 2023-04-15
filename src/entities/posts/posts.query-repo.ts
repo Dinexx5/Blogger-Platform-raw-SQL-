@@ -8,32 +8,30 @@ import { BlogBansRepository } from '../bans/bans.blogs.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-function mapperToPostViewModel(post: PostDocument): PostViewModel {
-  return {
-    id: post.id.toString(),
-    title: post.title,
-    shortDescription: post.shortDescription,
-    content: post.content,
-    blogId: post.blogId,
-    blogName: post.blogName,
-    createdAt: post.createdAt,
-    extendedLikesInfo: {
-      likesCount: post.extendedLikesInfo.likesCount,
-      dislikesCount: post.extendedLikesInfo.dislikesCount,
-      myStatus: post.extendedLikesInfo.myStatus,
-      newestLikes: post.extendedLikesInfo.newestLikes,
-    },
-  };
-}
-
 export class PostsQueryRepository {
   constructor(
     protected bansRepository: BansRepository,
     protected postsLikesRepository: PostsLikesRepository,
     protected blogBansRepository: BlogBansRepository,
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
+  mapperToPostViewModel(post): PostViewModel {
+    return {
+      id: post.id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount: post.likesCount,
+        dislikesCount: post.dislikesCount,
+        myStatus: post.myStatus,
+        newestLikes: post.newestLikes,
+      },
+    };
+  }
   async getAllPosts(
     query: paginationQuerys,
     blogId?: string,
@@ -71,7 +69,7 @@ export class PostsQueryRepository {
     ]);
     await this.countLikesForPosts(posts, userId);
 
-    const postsView = posts.map(mapperToPostViewModel);
+    const postsView = posts.map(this.mapperToPostViewModel);
     return {
       pagesCount: Math.ceil(+count / +pageSize),
       page: +pageNumber,
@@ -80,7 +78,7 @@ export class PostsQueryRepository {
       items: postsView,
     };
   }
-  async countLikesForPosts(posts: PostDocument[], userId?: string) {
+  async countLikesForPosts(posts, userId?: string) {
     for (const post of posts) {
       const foundLikes = await this.postsLikesRepository.findLikesForPost(post.id.toString());
       const threeLatestLikes = await this.postsLikesRepository.findThreeLatestLikes(
@@ -89,18 +87,18 @@ export class PostsQueryRepository {
       if (userId) {
         const likeOfUser = foundLikes.find((like) => like.userId === userId);
         const likeStatus = likeOfUser.likeStatus;
-        post.extendedLikesInfo.myStatus = likeStatus;
+        post.myStatus = likeStatus;
       }
       const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
       const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
-      post.extendedLikesInfo.likesCount = likesCount;
-      post.extendedLikesInfo.dislikesCount = dislikesCount;
+      post.likesCount = likesCount;
+      post.dislikesCount = dislikesCount;
       const newestLikes: newestLikes[] = [];
       newestLikes.push(...threeLatestLikes);
-      post.extendedLikesInfo.newestLikes = newestLikes;
+      post.newestLikes = newestLikes;
     }
   }
-  async countLikesForPost(post: PostDocument, userId?: string) {
+  async countLikesForPost(post, userId?: string) {
     const foundLikes = await this.postsLikesRepository.findLikesForPost(post.id.toString());
     const threeLatestLikes = await this.postsLikesRepository.findThreeLatestLikes(
       post.id.toString(),
@@ -108,15 +106,15 @@ export class PostsQueryRepository {
     if (userId) {
       const likeOfUser = foundLikes.find((like) => like.userId === userId);
       const likeStatus = likeOfUser.likeStatus;
-      post.extendedLikesInfo.myStatus = likeStatus;
+      post.myStatus = likeStatus;
     }
     const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
     const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
-    post.extendedLikesInfo.likesCount = likesCount;
-    post.extendedLikesInfo.dislikesCount = dislikesCount;
+    post.likesCount = likesCount;
+    post.dislikesCount = dislikesCount;
     const newestLikes: newestLikes[] = [];
     newestLikes.push(...threeLatestLikes);
-    post.extendedLikesInfo.newestLikes = newestLikes;
+    post.newestLikes = newestLikes;
   }
 
   async findPostById(postId: string, userId?: string | null): Promise<PostViewModel | null> {
@@ -138,7 +136,7 @@ export class PostsQueryRepository {
     if (bannedPostsStrings.includes(foundPost[0].id.toString())) {
       return null;
     }
-    await this.countLikesForPost(foundPost, userId);
-    return mapperToPostViewModel(foundPost);
+    await this.countLikesForPost(foundPost[0], userId);
+    return this.mapperToPostViewModel(foundPost[0]);
   }
 }
