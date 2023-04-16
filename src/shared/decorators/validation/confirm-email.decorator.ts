@@ -14,10 +14,11 @@ export class IsConfirmationCodeCorrect implements ValidatorConstraintInterface {
   constructor(protected usersRepository: UsersRepository) {}
   async validate(code: string, args: ValidationArguments) {
     const user = await this.usersRepository.findUserByConfirmationCode(code);
-    const confirmationInfo = await this.usersRepository.findConfirmationInfo(user.id);
     if (!user) {
       return false;
     }
+    const confirmationInfo = await this.usersRepository.findConfirmationInfo(user.id.toString());
+    console.log(confirmationInfo);
     if (confirmationInfo.isConfirmed) {
       return false;
     }

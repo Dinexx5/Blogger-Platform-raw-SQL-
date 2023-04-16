@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 let isParamIntegerGuard = class isParamIntegerGuard {
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        const userId = request.params.id;
+        const userId = request.params.userId;
         const checkId = Number(userId);
         if (isNaN(checkId))
             throw new common_1.NotFoundException();

@@ -28,8 +28,8 @@ export class UsersSAController {
     return createdUser;
   }
   @UseGuards(AuthGuard, isParamIntegerGuard)
-  @Delete(':id')
-  async deleteUser(@Param('id') id: string, @Res() res: Response) {
+  @Delete(':userId')
+  async deleteUser(@Param('userId') id: string, @Res() res: Response) {
     const isDeleted = await this.usersService.deleteUserById(id);
     if (!isDeleted) {
       return res.sendStatus(404);

@@ -14,8 +14,9 @@ export class IsBlogAttachedDecorator implements ValidatorConstraintInterface {
   constructor(private blogsRepository: BlogsRepository) {}
   async validate(blogId: string, args: ValidationArguments) {
     const blog = await this.blogsRepository.findBlogInstance(blogId);
-    const ownerInfo = await this.blogsRepository.findBlogOwnerInfo(blog.id);
-    if (!blog || ownerInfo.userId) return false;
+    if (!blog) return false;
+    const ownerInfo = await this.blogsRepository.findBlogOwnerInfo(blog.id.toString());
+    if (ownerInfo.userId) return false;
     return true;
   }
   defaultMessage(args: ValidationArguments) {

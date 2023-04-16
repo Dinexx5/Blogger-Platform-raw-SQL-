@@ -14,8 +14,9 @@ export class EmailResendingDecorator implements ValidatorConstraintInterface {
   constructor(protected usersRepository: UsersRepository) {}
   async validate(email: string, args: ValidationArguments) {
     const user = await this.usersRepository.findUserByLoginOrEmail(email);
-    const confirmation = await this.usersRepository.findConfirmation(user.id);
-    if (!user || confirmation === true) {
+    if (!user) return false;
+    const confirmation = await this.usersRepository.findConfirmation(user.id.toString());
+    if (confirmation === true) {
       return false;
     }
     return true;

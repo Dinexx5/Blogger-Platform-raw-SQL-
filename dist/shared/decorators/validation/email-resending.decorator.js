@@ -19,8 +19,10 @@ let EmailResendingDecorator = class EmailResendingDecorator {
     }
     async validate(email, args) {
         const user = await this.usersRepository.findUserByLoginOrEmail(email);
-        const confirmation = await this.usersRepository.findConfirmation(user.id);
-        if (!user || confirmation === true) {
+        if (!user)
+            return false;
+        const confirmation = await this.usersRepository.findConfirmation(user.id.toString());
+        if (confirmation === true) {
             return false;
         }
         return true;

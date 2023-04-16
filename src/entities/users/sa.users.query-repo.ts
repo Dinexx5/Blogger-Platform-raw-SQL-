@@ -37,8 +37,8 @@ export class SaUsersQueryRepository {
 
     const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason",
                                 CASE
-                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 1
-                                 ELSE 2
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
                                 END toOrder
                     FROM "Users" u
                     LEFT JOIN "BanInfo" b

@@ -14,10 +14,10 @@ export class IsRecoveryCodeCorrect implements ValidatorConstraintInterface {
   constructor(protected usersRepository: UsersRepository) {}
   async validate(code: string, args: ValidationArguments) {
     const user = await this.usersRepository.findUserByRecoveryCode(code);
-    const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id);
     if (!user) {
       return false;
     }
+    const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id.toString());
     if (!recoveryInfo.expirationDate) {
       return false;
     }

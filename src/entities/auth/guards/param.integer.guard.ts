@@ -6,7 +6,7 @@ import { Request } from 'express';
 export class isParamIntegerGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const userId = request.params.id;
+    const userId = request.params.userId;
     const checkId = Number(userId);
     if (isNaN(checkId)) throw new NotFoundException();
     return true;

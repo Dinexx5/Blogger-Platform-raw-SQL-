@@ -19,10 +19,10 @@ let IsRecoveryCodeCorrect = class IsRecoveryCodeCorrect {
     }
     async validate(code, args) {
         const user = await this.usersRepository.findUserByRecoveryCode(code);
-        const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id);
         if (!user) {
             return false;
         }
+        const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id.toString());
         if (!recoveryInfo.expirationDate) {
             return false;
         }
