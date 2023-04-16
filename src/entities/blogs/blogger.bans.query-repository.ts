@@ -15,7 +15,7 @@ export class BloggerBansQueryRepository {
   ) {}
   mapFoundBansToViewModel(ban: UserForBlogBanDocument): BannedForBlogUserViewModel {
     return {
-      id: ban.userId,
+      id: ban.userId.toString(),
       login: ban.login,
       banInfo: {
         isBanned: ban.isBanned,

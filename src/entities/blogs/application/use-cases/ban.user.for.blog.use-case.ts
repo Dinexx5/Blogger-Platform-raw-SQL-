@@ -28,8 +28,6 @@ export class BanUserForBlogUseCase implements ICommandHandler<BanUserForBlogComm
     protected postsRepository: PostsRepository,
     protected blogsRepository: BlogsRepository,
     protected usersBansForBlogsRepository: UsersBansForBlogRepository,
-    @InjectModel(UserForBlogBan.name) private banUserForBlogModel: Model<UserForBlogBanDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
   async execute(command: BanUserForBlogCommand): Promise<boolean> {
     const ownerId = command.ownerId;

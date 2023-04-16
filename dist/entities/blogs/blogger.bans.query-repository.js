@@ -24,7 +24,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
     }
     mapFoundBansToViewModel(ban) {
         return {
-            id: ban.userId,
+            id: ban.userId.toString(),
             login: ban.login,
             banInfo: {
                 isBanned: ban.isBanned,
