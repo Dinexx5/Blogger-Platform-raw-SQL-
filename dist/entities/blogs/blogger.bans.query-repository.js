@@ -24,7 +24,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
     }
     mapFoundBansToViewModel(ban) {
         return {
-            id: ban.userId,
+            id: ban.userId.toString(),
             login: ban.login,
             banInfo: {
                 isBanned: ban.isBanned,
@@ -34,7 +34,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         };
     }
     async getAllBannedUsersForBlog(query, blogId, userId) {
-        const { sortDirection = 'desc', sortBy = 'userId', pageNumber = 1, pageSize = 10, searchLoginTerm = null, } = query;
+        const { sortDirection = 'desc', sortBy = 'login', pageNumber = 1, pageSize = 10, searchLoginTerm = null, } = query;
         const skippedBlogsCount = (+pageNumber - 1) * +pageSize;
         const blog = await this.blogsRepository.findBlogInstance(blogId);
         if (!blog)
@@ -43,10 +43,14 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         if (blogOwnerInfo.userId.toString() !== userId)
             throw new common_1.ForbiddenException();
         const subQuery = `(${searchLoginTerm ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'` : true})`;
-        const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason"
+        const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "UserBanForBlog"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2

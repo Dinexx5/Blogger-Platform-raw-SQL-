@@ -1,5 +1,3 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { UserForBlogBan, UserForBlogBanDocument } from '../bans/application/domain/bans.schema';
 import { BannedForBlogUserViewModel } from '../users/userModels';
@@ -15,7 +13,7 @@ export class BloggerBansQueryRepository {
   ) {}
   mapFoundBansToViewModel(ban: UserForBlogBanDocument): BannedForBlogUserViewModel {
     return {
-      id: ban.userId,
+      id: ban.userId.toString(),
       login: ban.login,
       banInfo: {
         isBanned: ban.isBanned,
@@ -31,7 +29,7 @@ export class BloggerBansQueryRepository {
   ): Promise<paginatedViewModel<BannedForBlogUserViewModel[]>> {
     const {
       sortDirection = 'desc',
-      sortBy = 'userId',
+      sortBy = 'login',
       pageNumber = 1,
       pageSize = 10,
       searchLoginTerm = null,
@@ -46,10 +44,14 @@ export class BloggerBansQueryRepository {
     const subQuery = `(${
       searchLoginTerm ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'` : true
     })`;
-    const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason"
+    const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "UserBanForBlog"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2

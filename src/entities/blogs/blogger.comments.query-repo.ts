@@ -45,7 +45,11 @@ export class BloggerCommentsQueryRepository {
     const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
     const allPosts = await this.postsRepository.findPostsForUser(allBlogs);
 
-    const selectQuery = `SELECT c.*, ci.*, li*, pi*
+    const selectQuery = `SELECT c.*, ci.*, li*, pi*,
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
@@ -53,7 +57,7 @@ export class BloggerCommentsQueryRepository {
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2
