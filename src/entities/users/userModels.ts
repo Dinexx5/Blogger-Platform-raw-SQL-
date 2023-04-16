@@ -25,8 +25,8 @@ export class CreateUserModel {
 }
 
 export class ResendEmailModel {
-  @IsEmail()
-  @IsEmailConfirmed()
+  // @IsEmail()
+  // @IsEmailConfirmed()
   email: string;
 }
 
