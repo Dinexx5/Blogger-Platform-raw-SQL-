@@ -23,6 +23,7 @@ import { BlogsQueryRepository } from './blogs.query-repo';
 import { BloggerCommentsQueryRepository } from './blogger.comments.query-repo';
 import { commentsForBloggerViewModel } from '../comments/comments.models';
 import { isBlogIdIntegerGuard } from '../auth/guards/param.blogId.integer.guard';
+import { isPostIdIntegerGuard } from '../auth/guards/param.postId.isinteger.guard';
 
 @Controller('blogger/blogs')
 export class BloggerController {
@@ -52,7 +53,7 @@ export class BloggerController {
     const createdInstance: BlogViewModel = await this.blogsService.createBlog(inputModel, userId);
     return createdInstance;
   }
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Put(':blogId')
   async updateBlog(
     @Body() inputModel: updateBlogModel,
@@ -70,7 +71,7 @@ export class BloggerController {
     return res.sendStatus(204);
   }
 
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Post(':blogId/posts')
   async createPost(
     @Body() inputModel: createPostModel,
@@ -81,7 +82,7 @@ export class BloggerController {
     const post = await this.postsService.createPost(inputModel, params.blogId, userId);
     return res.send(post);
   }
-  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard, isPostIdIntegerGuard)
   @Put(':blogId/posts/:postId')
   async updatePost(
     @Body() inputModel: updatePostModel,
@@ -92,7 +93,7 @@ export class BloggerController {
     await this.postsService.updatePostById(inputModel, params.postId, params.blogId, userId);
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard, isPostIdIntegerGuard)
   @Delete(':blogId/posts/:postId')
   async deletePost(
     @Param() params: blogAndPostParamModel,

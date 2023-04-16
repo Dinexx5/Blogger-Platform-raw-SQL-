@@ -20,6 +20,7 @@ const comments_service_1 = require("./comments.service");
 const current_user_decorator_1 = require("../../shared/decorators/current-user.decorator");
 const getuser_guard_1 = require("../auth/guards/getuser.guard");
 const comments_models_1 = require("./comments.models");
+const param_commentid_isinteger_1 = require("../auth/guards/param.commentid.isinteger");
 let CommentsController = class CommentsController {
     constructor(commentsQueryRepository, commentsService) {
         this.commentsQueryRepository = commentsQueryRepository;
@@ -47,20 +48,20 @@ let CommentsController = class CommentsController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(getuser_guard_1.GetUserGuard),
-    (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(getuser_guard_1.GetUserGuard, param_commentid_isinteger_1.isCommentIdIntegerGuard),
+    (0, common_1.Get)(':commentId'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('commentId')),
     __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "getComment", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
-    (0, common_1.Put)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_commentid_isinteger_1.isCommentIdIntegerGuard),
+    (0, common_1.Put)(':commentId'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('commentId')),
     __param(2, (0, common_1.Body)()),
     __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -68,20 +69,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "updateComment", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
-    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_commentid_isinteger_1.isCommentIdIntegerGuard),
+    (0, common_1.Delete)(':commentId'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('commentId')),
     __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "deleteComment", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
-    (0, common_1.Put)('/:id/like-status'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_commentid_isinteger_1.isCommentIdIntegerGuard),
+    (0, common_1.Put)('/:commentId/like-status'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('commentId')),
     __param(2, (0, common_1.Body)()),
     __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),

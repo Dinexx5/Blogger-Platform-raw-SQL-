@@ -9,6 +9,7 @@ import { JwtAccessAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { GetUserGuard } from '../auth/guards/getuser.guard';
 import { CommentViewModel, CreateCommentModel, LikeInputModel } from '../comments/comments.models';
+import { isPostIdIntegerGuard } from '../auth/guards/param.postId.isinteger.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -25,20 +26,20 @@ export class PostsController {
 
     return returnedPosts;
   }
-  @UseGuards(GetUserGuard)
-  @Get(':id')
-  async getPost(@CurrentUser() userId, @Param('id') id: string, @Res() res: Response) {
+  @UseGuards(GetUserGuard, isPostIdIntegerGuard)
+  @Get(':postId')
+  async getPost(@CurrentUser() userId, @Param('postId') id: string, @Res() res: Response) {
     const post = await this.postsQueryRepository.findPostById(id, userId);
     if (!post) {
       return res.sendStatus(404);
     }
     return res.send(post);
   }
-  @UseGuards(GetUserGuard)
-  @Get(':id/comments')
+  @UseGuards(GetUserGuard, isPostIdIntegerGuard)
+  @Get(':postId/comments')
   async getComments(
     @CurrentUser() userId,
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Query() paginationQuery: paginationQuerys,
     @Res() res: Response,
   ) {
@@ -50,11 +51,11 @@ export class PostsController {
       await this.commentsQueryRepository.getAllCommentsForPost(paginationQuery, postId, userId);
     return res.send(returnedComments);
   }
-  @UseGuards(JwtAccessAuthGuard)
-  @Post(':id/comments')
+  @UseGuards(JwtAccessAuthGuard, isPostIdIntegerGuard)
+  @Post(':postId/comments')
   async createComment(
     @CurrentUser() userId,
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Body() inputModel: CreateCommentModel,
     @Res() res: Response,
   ) {
@@ -66,11 +67,11 @@ export class PostsController {
     if (!newComment) return res.sendStatus(404);
     return res.status(201).send(newComment);
   }
-  @UseGuards(JwtAccessAuthGuard)
-  @Put('/:id/like-status')
+  @UseGuards(JwtAccessAuthGuard, isPostIdIntegerGuard)
+  @Put('/:postId/like-status')
   async likePost(
     @CurrentUser() userId,
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Body() inputModel: LikeInputModel,
     @Res() res: Response,
   ) {

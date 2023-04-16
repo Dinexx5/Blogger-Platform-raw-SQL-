@@ -6,6 +6,7 @@ import { CommentsService } from './comments.service';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { GetUserGuard } from '../auth/guards/getuser.guard';
 import { CommentViewModel, CreateCommentModel, LikeInputModel } from './comments.models';
+import { isCommentIdIntegerGuard } from '../auth/guards/param.commentid.isinteger';
 
 @Controller('comments')
 export class CommentsController {
@@ -14,9 +15,9 @@ export class CommentsController {
     protected commentsService: CommentsService,
   ) {}
 
-  @UseGuards(GetUserGuard)
-  @Get(':id')
-  async getComment(@CurrentUser() userId, @Param('id') id: string, @Res() res: Response) {
+  @UseGuards(GetUserGuard, isCommentIdIntegerGuard)
+  @Get(':commentId')
+  async getComment(@CurrentUser() userId, @Param('commentId') id: string, @Res() res: Response) {
     const comment: CommentViewModel | null = await this.commentsQueryRepository.findCommentById(
       id,
       userId,
@@ -24,28 +25,32 @@ export class CommentsController {
     if (!comment) return res.sendStatus(404);
     return res.send(comment);
   }
-  @UseGuards(JwtAccessAuthGuard)
-  @Put(':id')
+  @UseGuards(JwtAccessAuthGuard, isCommentIdIntegerGuard)
+  @Put(':commentId')
   async updateComment(
     @CurrentUser() userId,
-    @Param('id') commentId: string,
+    @Param('commentId') commentId: string,
     @Body() inputModel: CreateCommentModel,
     @Res() res: Response,
   ) {
     await this.commentsService.updateCommentById(commentId, inputModel, userId);
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard)
-  @Delete(':id')
-  async deleteComment(@CurrentUser() userId, @Param('id') commentId: string, @Res() res: Response) {
+  @UseGuards(JwtAccessAuthGuard, isCommentIdIntegerGuard)
+  @Delete(':commentId')
+  async deleteComment(
+    @CurrentUser() userId,
+    @Param('commentId') commentId: string,
+    @Res() res: Response,
+  ) {
     await this.commentsService.deleteCommentById(commentId, userId);
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard)
-  @Put('/:id/like-status')
+  @UseGuards(JwtAccessAuthGuard, isCommentIdIntegerGuard)
+  @Put('/:commentId/like-status')
   async likeComment(
     @CurrentUser() userId,
-    @Param('id') commentId: string,
+    @Param('commentId') commentId: string,
     @Body() inputModel: LikeInputModel,
     @Res() res: Response,
   ) {

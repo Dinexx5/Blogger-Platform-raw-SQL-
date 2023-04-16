@@ -21,7 +21,7 @@ export class PostsQueryRepository {
       title: post.title,
       shortDescription: post.shortDescription,
       content: post.content,
-      blogId: post.blogId,
+      blogId: post.blogId.toString(),
       blogName: post.blogName,
       createdAt: post.createdAt,
       extendedLikesInfo: {

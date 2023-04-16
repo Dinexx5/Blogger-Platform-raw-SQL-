@@ -24,6 +24,7 @@ const current_user_decorator_1 = require("../../shared/decorators/current-user.d
 const blogs_query_repo_1 = require("./blogs.query-repo");
 const blogger_comments_query_repo_1 = require("./blogger.comments.query-repo");
 const param_blogId_integer_guard_1 = require("../auth/guards/param.blogId.integer.guard");
+const param_postId_isinteger_guard_1 = require("../auth/guards/param.postId.isinteger.guard");
 let BloggerController = class BloggerController {
     constructor(blogsService, postsService, blogsQueryRepo, bloggerCommentsQueryRepo) {
         this.blogsService = blogsService;
@@ -92,7 +93,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "createBlog", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
     (0, common_1.Put)(':blogId'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)()),
@@ -114,7 +115,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "deleteBlog", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
     (0, common_1.Post)(':blogId/posts'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)()),
@@ -126,7 +127,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "createPost", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard, param_postId_isinteger_guard_1.isPostIdIntegerGuard),
     (0, common_1.Put)(':blogId/posts/:postId'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)()),
@@ -138,7 +139,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "updatePost", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard, param_postId_isinteger_guard_1.isPostIdIntegerGuard),
     (0, common_1.Delete)(':blogId/posts/:postId'),
     __param(0, (0, common_1.Param)()),
     __param(1, (0, common_1.Res)()),
