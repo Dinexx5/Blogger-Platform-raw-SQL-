@@ -42,7 +42,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         const blogOwnerInfo = await this.blogsRepository.findBlogOwnerInfo(blogId);
         if (blogOwnerInfo.userId.toString() !== userId)
             throw new common_1.ForbiddenException();
-        const subQuery = `(${searchLoginTerm ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'` : true})`;
+        const subQuery = `"blogId" = ${blogId} AND (${searchLoginTerm ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'` : true})`;
         const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason",
                                 CASE
                                  WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
@@ -59,6 +59,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         const counterQuery = `SELECT COUNT(*)
                     FROM "UserBanForBlog" u
                     WHERE ${subQuery}`;
+        console.log(subQuery);
         const counter = await this.dataSource.query(counterQuery);
         const count = counter[0].count;
         const bans = await this.dataSource.query(selectQuery, [
