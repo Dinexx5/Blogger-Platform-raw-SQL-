@@ -26,8 +26,6 @@ export class BansUserUseCase implements ICommandHandler<BansUserCommand> {
     protected bansRepository: BansRepository,
     protected devicesRepository: DevicesRepository,
     protected tokensRepository: TokenRepository,
-    @InjectModel(Ban.name) private banModel: Model<BanDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
   async execute(command: BansUserCommand): Promise<boolean> {
     const userId = command.userId;

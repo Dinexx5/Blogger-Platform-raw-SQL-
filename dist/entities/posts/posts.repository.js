@@ -74,6 +74,8 @@ let PostsRepository = class PostsRepository {
       `, [postId]);
     }
     async findPostsForUser(bannedBlog) {
+        if (bannedBlog.length === 0)
+            return [];
         const bannedBlogsStrings = bannedBlog.join();
         const posts = await this.dataSource.query(`
           SELECT *

@@ -17,15 +17,13 @@ export class IsConfirmationCodeCorrect implements ValidatorConstraintInterface {
     if (!user) {
       return false;
     }
-    const confirmationInfo = await this.usersRepository.findConfirmationInfo(user.id.toString());
-    console.log(confirmationInfo);
-    if (confirmationInfo.isConfirmed) {
+    if (user.isConfirmed) {
       return false;
     }
-    if (confirmationInfo.confirmationCode !== code) {
+    if (user.confirmationCode !== code) {
       return false;
     }
-    if (confirmationInfo.expirationDate < new Date()) {
+    if (user.expirationDate < new Date()) {
       return false;
     }
     return true;

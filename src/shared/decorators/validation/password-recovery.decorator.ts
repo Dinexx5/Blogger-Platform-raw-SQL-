@@ -17,14 +17,13 @@ export class IsRecoveryCodeCorrect implements ValidatorConstraintInterface {
     if (!user) {
       return false;
     }
-    const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id.toString());
-    if (!recoveryInfo.expirationDate) {
+    if (!user.expirationDate) {
       return false;
     }
-    if (recoveryInfo.recoveryCode !== code) {
+    if (user.recoveryCode !== code) {
       return false;
     }
-    if (recoveryInfo.expirationDate < new Date()) {
+    if (user.expirationDate < new Date()) {
       return false;
     }
     return true;

@@ -92,6 +92,7 @@ export class PostsRepository {
     );
   }
   async findPostsForUser(bannedBlog: string[]) {
+    if (bannedBlog.length === 0) return [];
     const bannedBlogsStrings = bannedBlog.join();
     const posts = await this.dataSource.query(
       `
