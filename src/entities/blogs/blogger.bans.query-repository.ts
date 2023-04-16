@@ -1,5 +1,5 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
-import { UserForBlogBan, UserForBlogBanDocument } from '../bans/application/domain/bans.schema';
+import { UserForBlogBanDocument } from '../bans/application/domain/bans.schema';
 import { BannedForBlogUserViewModel } from '../users/userModels';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
