@@ -14,7 +14,7 @@ export class CommentsLikesRepository {
   ) {}
   async likeComment(commentId: string, likeStatus: string, userId: string, createdAt: string) {
     const likeQuery = `INSERT INTO "CommentsLikes"
-                   ("postId", "likeStatus", "userId", "createdAt")
+                   ("commentId", "likeStatus", "userId", "createdAt")
                    VALUES ($1, $2, $3, $4)
                    RETURNING *;`;
     await this.dataSource.query(likeQuery, [commentId, likeStatus, userId, createdAt]);
@@ -46,7 +46,9 @@ export class CommentsLikesRepository {
       `
           SELECT *
           FROM "CommentsLikes"
-          WHERE "commentId" = $1 AND "userId" NOT IN (${bannedUsers})
+          WHERE "commentId" = $1 AND "userId" ${
+            bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`
+          }
       `,
       [commentId],
     );

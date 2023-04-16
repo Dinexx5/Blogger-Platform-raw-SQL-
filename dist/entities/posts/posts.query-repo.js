@@ -88,9 +88,10 @@ let PostsQueryRepository = class PostsQueryRepository {
             const foundLikes = await this.postsLikesRepository.findLikesForPost(post.id.toString());
             const threeLatestLikes = await this.postsLikesRepository.findThreeLatestLikes(post.id.toString());
             if (userId) {
-                const likeOfUser = foundLikes.find((like) => like.userId === userId);
-                const likeStatus = likeOfUser.likeStatus;
-                post.myStatus = likeStatus;
+                const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+                if (likeOfUser) {
+                    post.myStatus = likeOfUser.likeStatus;
+                }
             }
             const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
             const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
@@ -105,9 +106,10 @@ let PostsQueryRepository = class PostsQueryRepository {
         const foundLikes = await this.postsLikesRepository.findLikesForPost(post.id.toString());
         const threeLatestLikes = await this.postsLikesRepository.findThreeLatestLikes(post.id.toString());
         if (userId) {
-            const likeOfUser = foundLikes.find((like) => like.userId === userId);
-            const likeStatus = likeOfUser.likeStatus;
-            post.myStatus = likeStatus;
+            const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+            if (likeOfUser) {
+                post.myStatus = likeOfUser.likeStatus;
+            }
         }
         const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
         const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;

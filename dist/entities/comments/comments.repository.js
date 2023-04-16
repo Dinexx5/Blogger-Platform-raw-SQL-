@@ -63,7 +63,7 @@ let CommentsRepository = class CommentsRepository {
         await this.dataSource.query(`
           UPDATE "Comments"
           SET "content"= '${content}'
-          WHERE "commentId" = $1
+          WHERE "id" = $1
       `, [commentId]);
     }
     async deleteComment(commentId) {
@@ -96,9 +96,6 @@ let CommentsRepository = class CommentsRepository {
       `, [userId]);
         const commentsIds = commentsForUser.map((comment) => comment.commentId.toString());
         return commentsIds;
-    }
-    async save(instance) {
-        instance.save();
     }
 };
 CommentsRepository = __decorate([

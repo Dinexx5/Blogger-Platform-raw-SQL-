@@ -68,7 +68,7 @@ export class CommentsRepository {
       `
           UPDATE "Comments"
           SET "content"= '${content}'
-          WHERE "commentId" = $1
+          WHERE "id" = $1
       `,
       [commentId],
     );
@@ -118,9 +118,5 @@ export class CommentsRepository {
     );
     const commentsIds = commentsForUser.map((comment) => comment.commentId.toString());
     return commentsIds;
-  }
-
-  async save(instance: any) {
-    instance.save();
   }
 }

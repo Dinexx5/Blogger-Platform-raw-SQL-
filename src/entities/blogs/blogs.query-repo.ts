@@ -1,10 +1,5 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from './domain/blogs.schema';
-import mongoose, { Model } from 'mongoose';
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { BlogViewModel } from './blogs.models';
-import { BlogsSAQueryRepository } from './sa.blog.query-repo';
-import { BansUserUseCase } from '../bans/application/use-cases/ban.user.use.case.';
 import { BansRepository } from '../bans/bans.repository';
 import { BlogBansRepository } from '../bans/bans.blogs.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -78,8 +73,6 @@ export class BlogsQueryRepository {
                     ON b."id" = o."blogId"
                     WHERE ${subQuery}`;
 
-    console.log(subQuery);
-
     const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;
     const blogs = await this.dataSource.query(selectQuery, [
@@ -101,9 +94,7 @@ export class BlogsQueryRepository {
   async findBlogById(blogId: string): Promise<BlogViewModel | null> {
     const bannedBlogsFromUsers = await this.bansRepository.getBannedBlogs();
     const bannedBlogs = await this.blogBansRepository.getBannedBlogs();
-    console.log(bannedBlogs);
     const allBannedBlogs = bannedBlogs.concat(bannedBlogsFromUsers);
-    console.log(allBannedBlogs);
     const foundBlog = await this.dataSource.query(
       `
           SELECT *

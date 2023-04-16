@@ -49,7 +49,7 @@ export class CommentsQueryRepository {
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     LEFT JOIN "CommentatorInfo" ci
-                    ON c."id" = pi."commentId"
+                    ON c."id" = ci."commentId"
                     WHERE ${subQuery}
                     ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
@@ -86,9 +86,10 @@ export class CommentsQueryRepository {
         comment.id.toString(),
       );
       if (userId) {
-        const likeOfUser = foundLikes.find((like) => like.userId === userId);
-        const likeStatus = likeOfUser.likeStatus;
-        comment.myStatus = likeStatus;
+        const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+        if (likeOfUser) {
+          comment.myStatus = likeOfUser.likeStatus;
+        }
       }
       const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
       const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
@@ -101,9 +102,10 @@ export class CommentsQueryRepository {
       comment.id.toString(),
     );
     if (userId) {
-      const likeOfUser = foundLikes.find((like) => like.userId === userId);
-      const likeStatus = likeOfUser.likeStatus;
-      comment.myStatus = likeStatus;
+      const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+      if (likeOfUser) {
+        comment.myStatus = likeOfUser.likeStatus;
+      }
     }
     const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
     const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
@@ -124,7 +126,7 @@ export class CommentsQueryRepository {
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     LEFT JOIN "CommentatorInfo" ci
-                    ON c."id" = pi."commentId"
+                    ON c."id" = ci."commentId"
           WHERE "id" = $1
       `,
       [commentId],

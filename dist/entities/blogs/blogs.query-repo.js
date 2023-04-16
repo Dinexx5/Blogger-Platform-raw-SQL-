@@ -67,7 +67,6 @@ let BlogsQueryRepository = class BlogsQueryRepository {
                     LEFT JOIN "BlogOwnerInfo" o
                     ON b."id" = o."blogId"
                     WHERE ${subQuery}`;
-        console.log(subQuery);
         const counter = await this.dataSource.query(counterQuery);
         const count = counter[0].count;
         const blogs = await this.dataSource.query(selectQuery, [
@@ -87,9 +86,7 @@ let BlogsQueryRepository = class BlogsQueryRepository {
     async findBlogById(blogId) {
         const bannedBlogsFromUsers = await this.bansRepository.getBannedBlogs();
         const bannedBlogs = await this.blogBansRepository.getBannedBlogs();
-        console.log(bannedBlogs);
         const allBannedBlogs = bannedBlogs.concat(bannedBlogsFromUsers);
-        console.log(allBannedBlogs);
         const foundBlog = await this.dataSource.query(`
           SELECT *
           FROM "Blogs"

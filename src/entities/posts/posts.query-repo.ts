@@ -89,9 +89,10 @@ export class PostsQueryRepository {
         post.id.toString(),
       );
       if (userId) {
-        const likeOfUser = foundLikes.find((like) => like.userId === userId);
-        const likeStatus = likeOfUser.likeStatus;
-        post.myStatus = likeStatus;
+        const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+        if (likeOfUser) {
+          post.myStatus = likeOfUser.likeStatus;
+        }
       }
       const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
       const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
@@ -108,9 +109,10 @@ export class PostsQueryRepository {
       post.id.toString(),
     );
     if (userId) {
-      const likeOfUser = foundLikes.find((like) => like.userId === userId);
-      const likeStatus = likeOfUser.likeStatus;
-      post.myStatus = likeStatus;
+      const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+      if (likeOfUser) {
+        post.myStatus = likeOfUser.likeStatus;
+      }
     }
     const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
     const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;

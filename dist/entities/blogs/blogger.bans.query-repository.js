@@ -59,7 +59,6 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         const counterQuery = `SELECT COUNT(*)
                     FROM "UserBanForBlog" u
                     WHERE ${subQuery}`;
-        console.log(subQuery);
         const counter = await this.dataSource.query(counterQuery);
         const count = counter[0].count;
         const bans = await this.dataSource.query(selectQuery, [

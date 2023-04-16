@@ -8,5 +8,4 @@ export declare class CommentsRepository {
     updateComment(commentId: string, content: string): Promise<void>;
     deleteComment(commentId: string): Promise<void>;
     findBannedComments(userId: string): Promise<any>;
-    save(instance: any): Promise<void>;
 }
