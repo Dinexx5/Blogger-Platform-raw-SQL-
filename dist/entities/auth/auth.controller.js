@@ -19,7 +19,6 @@ const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 const local_auth_guard_1 = require("./guards/local-auth.guard");
 const users_repository_1 = require("../users/users.repository");
 const userModels_1 = require("../users/userModels");
-const rate_limit_guard_1 = require("./guards/rate-limit.guard");
 const jwt_refresh_guard_1 = require("./guards/jwt-refresh.guard");
 const current_user_decorator_1 = require("../../shared/decorators/current-user.decorator");
 let AuthController = class AuthController {
@@ -64,9 +63,15 @@ let AuthController = class AuthController {
         return res.sendStatus(204);
     }
     async registerUser(inputModel, res) {
+        const createdAccount = await this.authService.createUser(inputModel);
+        if (!createdAccount)
+            return res.send('can not send email. try later');
         return res.sendStatus(204);
     }
     async resendEmail(inputModel, res) {
+        const isEmailResent = await this.authService.resendEmail(inputModel.email);
+        if (!isEmailResent)
+            return res.send('Can not send an email');
         return res.sendStatus(204);
     }
     async confirmEmail(inputModel, res) {
@@ -89,7 +94,7 @@ let AuthController = class AuthController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard, local_auth_guard_1.LocalAuthGuard),
+    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
@@ -126,7 +131,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "deleteCurrentSession", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -135,7 +139,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerUser", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-email-resending'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -144,7 +147,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resendEmail", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('registration-confirmation'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -153,7 +155,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "confirmEmail", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('password-recovery'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -162,7 +163,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "recoverPassword", null);
 __decorate([
-    (0, common_1.UseGuards)(rate_limit_guard_1.RateLimitGuard),
     (0, common_1.Post)('new-password'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
