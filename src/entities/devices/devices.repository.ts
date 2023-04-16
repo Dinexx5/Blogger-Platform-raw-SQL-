@@ -52,7 +52,7 @@ export class DevicesRepository {
       `
           DELETE
           FROM "Devices"
-          WHERE "deviceId" = $1 AND "userId" = $2
+          WHERE "deviceId" != $1 AND "userId" = $2
       `,
       [deviceId, userId],
     );

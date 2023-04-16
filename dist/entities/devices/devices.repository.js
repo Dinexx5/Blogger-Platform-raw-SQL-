@@ -56,7 +56,7 @@ let DevicesRepository = class DevicesRepository {
         await this.dataSource.query(`
           DELETE
           FROM "Devices"
-          WHERE "deviceId" = $1 AND "userId" = $2
+          WHERE "deviceId" != $1 AND "userId" = $2
       `, [deviceId, userId]);
     }
     async findSessionByDeviceId(deviceId) {
