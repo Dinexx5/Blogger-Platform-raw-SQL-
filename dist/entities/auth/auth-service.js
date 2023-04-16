@@ -75,7 +75,7 @@ let AuthService = class AuthService {
         const payload = { userId: userId };
         const accessToken = this.jwtService.sign(payload, {
             secret: process.env.ACCESS_SECRET,
-            expiresIn: '10000s',
+            expiresIn: '10s',
         });
         return accessToken;
     }
@@ -84,7 +84,7 @@ let AuthService = class AuthService {
         const payload = { userId: userId.toString(), deviceId: deviceId };
         const refreshToken = this.jwtService.sign(payload, {
             secret: process.env.REFRESH_SECRET,
-            expiresIn: '10000s',
+            expiresIn: '20s',
         });
         const result = await this.jwtService.verify(refreshToken, {
             secret: process.env.REFRESH_SECRET,
@@ -108,7 +108,7 @@ let AuthService = class AuthService {
         const newPayload = { userId: userId, deviceId: deviceId };
         const newRefreshToken = this.jwtService.sign(newPayload, {
             secret: process.env.REFRESH_SECRET,
-            expiresIn: '10000s',
+            expiresIn: '20s',
         });
         const newResult = await this.getRefreshTokenInfo(newRefreshToken);
         const newIssuedAt = new Date(newResult.iat * 1000).toISOString();

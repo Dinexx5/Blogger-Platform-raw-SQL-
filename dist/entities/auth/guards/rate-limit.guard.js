@@ -22,6 +22,7 @@ let RateLimitGuard = class RateLimitGuard {
         const request = context.switchToHttp().getRequest();
         const { ip, url } = request;
         const requestData = ip + url;
+        console.log(requestData);
         const dateNow = new Date().toISOString();
         await this.attemptsRepository.addNewAttempt(requestData, dateNow);
         const tenSecondsAgo = (0, date_fns_1.subSeconds)(new Date(dateNow), 10).toISOString();

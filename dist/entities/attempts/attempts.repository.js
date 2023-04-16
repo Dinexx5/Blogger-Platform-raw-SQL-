@@ -13,35 +13,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttemptsRepository = void 0;
-const mongodb_1 = require("mongodb");
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const attempts_schema_1 = require("./attempts.schema");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 let AttemptsRepository = class AttemptsRepository {
-    constructor(attemptModel) {
-        this.attemptModel = attemptModel;
+    constructor(dataSource) {
+        this.dataSource = dataSource;
     }
     async addNewAttempt(requestData, date) {
-        const newAttemptDto = {
-            _id: new mongodb_1.ObjectId(),
-            requestData: requestData,
-            date: date,
-        };
-        const attemptInstance = new this.attemptModel(newAttemptDto);
-        await attemptInstance.save();
+        const attemptQuery = `INSERT INTO "Attempts"
+                   ("requestData", "date")
+                   VALUES ($1, $2)
+                   RETURNING *;`;
+        await this.dataSource.query(attemptQuery, [requestData, date]);
     }
     async countAttempts(requestData, tenSecondsAgo) {
-        return this.attemptModel.countDocuments({
-            requestData: requestData,
-            date: { $gte: tenSecondsAgo },
-        });
+        const counterQuery = `SELECT COUNT(*)
+                    FROM "Attempts" 
+                    WHERE "requestData" = '${requestData}' AND "date" >=  '${tenSecondsAgo}'`;
+        const counter = await this.dataSource.query(counterQuery);
+        return counter[0].count;
     }
 };
 AttemptsRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(attempts_schema_1.Attempt.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], AttemptsRepository);
 exports.AttemptsRepository = AttemptsRepository;
 //# sourceMappingURL=attempts.repository.js.map

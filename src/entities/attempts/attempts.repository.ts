@@ -1,25 +1,23 @@
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Attempt, AttemptDocument } from './attempts.schema';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AttemptsRepository {
-  constructor(@InjectModel(Attempt.name) private attemptModel: Model<AttemptDocument>) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async addNewAttempt(requestData: string, date: string) {
-    const newAttemptDto = {
-      _id: new ObjectId(),
-      requestData: requestData,
-      date: date,
-    };
-    const attemptInstance = new this.attemptModel(newAttemptDto);
-    await attemptInstance.save();
+    const attemptQuery = `INSERT INTO "Attempts"
+                   ("requestData", "date")
+                   VALUES ($1, $2)
+                   RETURNING *;`;
+    await this.dataSource.query(attemptQuery, [requestData, date]);
   }
   async countAttempts(requestData: string, tenSecondsAgo: string) {
-    return this.attemptModel.countDocuments({
-      requestData: requestData,
-      date: { $gte: tenSecondsAgo },
-    });
+    const counterQuery = `SELECT COUNT(*)
+                    FROM "Attempts" 
+                    WHERE "requestData" = '${requestData}' AND "date" >=  '${tenSecondsAgo}'`;
+
+    const counter = await this.dataSource.query(counterQuery);
+    return counter[0].count;
   }
 }

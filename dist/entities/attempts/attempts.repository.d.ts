@@ -1,8 +1,7 @@
-import { Model } from 'mongoose';
-import { AttemptDocument } from './attempts.schema';
+import { DataSource } from 'typeorm';
 export declare class AttemptsRepository {
-    private attemptModel;
-    constructor(attemptModel: Model<AttemptDocument>);
+    protected dataSource: DataSource;
+    constructor(dataSource: DataSource);
     addNewAttempt(requestData: string, date: string): Promise<void>;
-    countAttempts(requestData: string, tenSecondsAgo: string): Promise<number>;
+    countAttempts(requestData: string, tenSecondsAgo: string): Promise<any>;
 }
