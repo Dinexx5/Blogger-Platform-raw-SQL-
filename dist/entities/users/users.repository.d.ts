@@ -8,6 +8,8 @@ export declare class UsersRepository {
     updateBanInfoForBan(userId: string, banDate: string, banReason: string): Promise<void>;
     updateBanInfoForUnban(userId: string): Promise<void>;
     findConfirmation(userId: string): Promise<any>;
+    findConfirmationInfo(userId: string): Promise<any>;
+    findPasswordRecoveryInfo(userId: string): Promise<any>;
     findUserByConfirmationCode(code: string): Promise<any>;
     updateConfirmation(code: string): Promise<void>;
     updateConfirmationCode(userId: string, code: string): Promise<void>;
@@ -15,5 +17,4 @@ export declare class UsersRepository {
     findUserByRecoveryCode(code: string): Promise<any>;
     updateRecoveryCode(userId: string, recoveryCode: string, expirationDate: Date): Promise<void>;
     updatePassword(userId: string, passwordHash: string): Promise<void>;
-    save(instance: any): Promise<void>;
 }

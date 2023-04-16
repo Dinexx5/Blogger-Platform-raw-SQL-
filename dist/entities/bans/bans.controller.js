@@ -18,6 +18,7 @@ const ban_user_use_case_1 = require("./application/use-cases/ban.user.use.case."
 const auth_guard_1 = require("../auth/guards/auth.guard");
 const userModels_1 = require("../users/userModels");
 const cqrs_1 = require("@nestjs/cqrs");
+const param_integer_guard_1 = require("../auth/guards/param.integer.guard");
 let BansController = class BansController {
     constructor(commandBus) {
         this.commandBus = commandBus;
@@ -28,7 +29,7 @@ let BansController = class BansController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard, param_integer_guard_1.isParamIntegerGuard),
     (0, common_1.Put)(':userId/ban'),
     __param(0, (0, common_1.Param)()),
     __param(1, (0, common_1.Body)()),

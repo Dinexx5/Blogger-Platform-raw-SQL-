@@ -13,17 +13,18 @@ import { UsersRepository } from '../../../entities/users/users.repository';
 export class IsConfirmationCodeCorrect implements ValidatorConstraintInterface {
   constructor(protected usersRepository: UsersRepository) {}
   async validate(code: string, args: ValidationArguments) {
-    const userInstance = await this.usersRepository.findUserByConfirmationCode(code);
-    if (!userInstance) {
+    const user = await this.usersRepository.findUserByConfirmationCode(code);
+    const confirmationInfo = await this.usersRepository.findConfirmationInfo(user.id);
+    if (!user) {
       return false;
     }
-    if (userInstance.emailConfirmation.isConfirmed) {
+    if (confirmationInfo.isConfirmed) {
       return false;
     }
-    if (userInstance.emailConfirmation.confirmationCode !== code) {
+    if (confirmationInfo.confirmationCode !== code) {
       return false;
     }
-    if (userInstance.emailConfirmation.expirationDate < new Date()) {
+    if (confirmationInfo.expirationDate < new Date()) {
       return false;
     }
     return true;

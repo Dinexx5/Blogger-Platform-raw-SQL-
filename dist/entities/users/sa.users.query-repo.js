@@ -13,14 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SaUsersQueryRepository = void 0;
-const users_schema_1 = require("./users.schema");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
 let SaUsersQueryRepository = class SaUsersQueryRepository {
-    constructor(userModel, dataSource) {
-        this.userModel = userModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     async getAllUsers(query) {
@@ -38,12 +34,16 @@ let SaUsersQueryRepository = class SaUsersQueryRepository {
                     ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%' 
                           OR  LOWER("email") LIKE '%' || LOWER('${searchEmailTerm}') || '%'`
                     : true})`;
-        const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason"
+        const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 1
+                                 ELSE 2
+                                END toOrder
                     FROM "Users" u
                     LEFT JOIN "BanInfo" b
                     ON u."id" = b."userId"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2
@@ -85,10 +85,8 @@ let SaUsersQueryRepository = class SaUsersQueryRepository {
     }
 };
 SaUsersQueryRepository = __decorate([
-    __param(0, (0, mongoose_1.InjectModel)(users_schema_1.User.name)),
-    __param(1, (0, typeorm_2.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        typeorm_1.DataSource])
+    __param(0, (0, typeorm_2.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_1.DataSource])
 ], SaUsersQueryRepository);
 exports.SaUsersQueryRepository = SaUsersQueryRepository;
 //# sourceMappingURL=sa.users.query-repo.js.map

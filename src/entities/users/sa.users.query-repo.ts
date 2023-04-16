@@ -1,16 +1,10 @@
-import { User, UserDocument } from './users.schema';
 import { paginatedViewModel, paginationQuerysSA } from '../../shared/models/pagination';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { SaUserViewModel, SaUserFromSqlRepo } from './userModels';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 
 export class SaUsersQueryRepository {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async getAllUsers(query: paginationQuerysSA): Promise<paginatedViewModel<SaUserViewModel[]>> {
     const {
       sortDirection = 'desc',
@@ -41,12 +35,16 @@ export class SaUsersQueryRepository {
         : true
     })`;
 
-    const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason"
+    const selectQuery = `SELECT u.*, b."isBanned",b."banDate",b."banReason",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 1
+                                 ELSE 2
+                                END toOrder
                     FROM "Users" u
                     LEFT JOIN "BanInfo" b
                     ON u."id" = b."userId"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2

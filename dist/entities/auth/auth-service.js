@@ -164,7 +164,6 @@ let AuthService = class AuthService {
             await this.emailAdapter.sendEmailForConfirmation(inputModel.email, confirmationCode);
         }
         catch (error) {
-            console.error(error);
             return null;
         }
         return createdUser;

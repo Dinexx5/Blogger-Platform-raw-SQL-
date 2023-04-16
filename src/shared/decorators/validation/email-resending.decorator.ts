@@ -13,8 +13,9 @@ import { UsersRepository } from '../../../entities/users/users.repository';
 export class EmailResendingDecorator implements ValidatorConstraintInterface {
   constructor(protected usersRepository: UsersRepository) {}
   async validate(email: string, args: ValidationArguments) {
-    const userInstance = await this.usersRepository.findUserByLoginOrEmail(email);
-    if (!userInstance || userInstance.emailConfirmation.isConfirmed === true) {
+    const user = await this.usersRepository.findUserByLoginOrEmail(email);
+    const confirmation = await this.usersRepository.findConfirmation(user.id);
+    if (!user || confirmation === true) {
       return false;
     }
     return true;

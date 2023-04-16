@@ -18,17 +18,18 @@ let IsRecoveryCodeCorrect = class IsRecoveryCodeCorrect {
         this.usersRepository = usersRepository;
     }
     async validate(code, args) {
-        const userInstance = await this.usersRepository.findUserByRecoveryCode(code);
-        if (!userInstance) {
+        const user = await this.usersRepository.findUserByRecoveryCode(code);
+        const recoveryInfo = await this.usersRepository.findPasswordRecoveryInfo(user.id);
+        if (!user) {
             return false;
         }
-        if (!userInstance.passwordRecovery.expirationDate) {
+        if (!recoveryInfo.expirationDate) {
             return false;
         }
-        if (userInstance.passwordRecovery.recoveryCode !== code) {
+        if (recoveryInfo.recoveryCode !== code) {
             return false;
         }
-        if (userInstance.passwordRecovery.expirationDate < new Date()) {
+        if (recoveryInfo.expirationDate < new Date()) {
             return false;
         }
         return true;

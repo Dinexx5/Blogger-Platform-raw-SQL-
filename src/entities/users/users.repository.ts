@@ -126,6 +126,28 @@ export class UsersRepository {
     );
     return isConfirmed[0].isConfirmed;
   }
+  async findConfirmationInfo(userId: string) {
+    const isConfirmed = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "EmailConfirmation"
+          WHERE "userId" = $1
+      `,
+      [userId],
+    );
+    return isConfirmed[0];
+  }
+  async findPasswordRecoveryInfo(userId: string) {
+    const isConfirmed = await this.dataSource.query(
+      `
+          SELECT *
+          FROM "PasswordRecovery"
+          WHERE "userId" = $1
+      `,
+      [userId],
+    );
+    return isConfirmed[0];
+  }
   async findUserByConfirmationCode(code: string) {
     const user = await this.dataSource.query(
       `
@@ -198,8 +220,5 @@ export class UsersRepository {
       `,
       [userId],
     );
-  }
-  async save(instance: any) {
-    instance.save();
   }
 }

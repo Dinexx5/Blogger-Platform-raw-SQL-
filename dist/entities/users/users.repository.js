@@ -102,6 +102,22 @@ let UsersRepository = class UsersRepository {
       `, [userId]);
         return isConfirmed[0].isConfirmed;
     }
+    async findConfirmationInfo(userId) {
+        const isConfirmed = await this.dataSource.query(`
+          SELECT *
+          FROM "EmailConfirmation"
+          WHERE "userId" = $1
+      `, [userId]);
+        return isConfirmed[0];
+    }
+    async findPasswordRecoveryInfo(userId) {
+        const isConfirmed = await this.dataSource.query(`
+          SELECT *
+          FROM "PasswordRecovery"
+          WHERE "userId" = $1
+      `, [userId]);
+        return isConfirmed[0];
+    }
     async findUserByConfirmationCode(code) {
         const user = await this.dataSource.query(`
           SELECT *
@@ -153,9 +169,6 @@ let UsersRepository = class UsersRepository {
           SET "passwordHash" = '${passwordHash}'
           WHERE "userId" = $1
       `, [userId]);
-    }
-    async save(instance) {
-        instance.save();
     }
 };
 UsersRepository = __decorate([

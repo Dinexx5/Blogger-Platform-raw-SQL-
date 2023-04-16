@@ -18,17 +18,18 @@ let IsConfirmationCodeCorrect = class IsConfirmationCodeCorrect {
         this.usersRepository = usersRepository;
     }
     async validate(code, args) {
-        const userInstance = await this.usersRepository.findUserByConfirmationCode(code);
-        if (!userInstance) {
+        const user = await this.usersRepository.findUserByConfirmationCode(code);
+        const confirmationInfo = await this.usersRepository.findConfirmationInfo(user.id);
+        if (!user) {
             return false;
         }
-        if (userInstance.emailConfirmation.isConfirmed) {
+        if (confirmationInfo.isConfirmed) {
             return false;
         }
-        if (userInstance.emailConfirmation.confirmationCode !== code) {
+        if (confirmationInfo.confirmationCode !== code) {
             return false;
         }
-        if (userInstance.emailConfirmation.expirationDate < new Date()) {
+        if (confirmationInfo.expirationDate < new Date()) {
             return false;
         }
         return true;

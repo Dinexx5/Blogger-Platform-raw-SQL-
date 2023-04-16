@@ -19,7 +19,8 @@ let IsBlogAttachedDecorator = class IsBlogAttachedDecorator {
     }
     async validate(blogId, args) {
         const blog = await this.blogsRepository.findBlogInstance(blogId);
-        if (!blog || blog.blogOwnerInfo.userId)
+        const ownerInfo = await this.blogsRepository.findBlogOwnerInfo(blog.id);
+        if (!blog || ownerInfo.userId)
             return false;
         return true;
     }
