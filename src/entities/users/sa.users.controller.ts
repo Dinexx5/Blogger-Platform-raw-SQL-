@@ -6,7 +6,7 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateUserModel, SaUserViewModel, userViewModel } from './userModels';
 import { SaUsersQueryRepository } from './sa.users.query-repo';
-import { isParamIntegerGuard } from '../auth/guards/param.integer.guard';
+import { isUserIdIntegerGuard } from '../auth/guards/param.integer.guard';
 
 @Controller('sa/users')
 export class UsersSAController {
@@ -27,7 +27,7 @@ export class UsersSAController {
     const createdUser: userViewModel = await this.usersService.createUser(inputModel);
     return createdUser;
   }
-  @UseGuards(AuthGuard, isParamIntegerGuard)
+  @UseGuards(AuthGuard, isUserIdIntegerGuard)
   @Delete(':userId')
   async deleteUser(@Param('userId') id: string, @Res() res: Response) {
     const isDeleted = await this.usersService.deleteUserById(id);

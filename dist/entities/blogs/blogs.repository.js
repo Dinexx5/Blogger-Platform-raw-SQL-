@@ -102,7 +102,7 @@ let BlogsRepository = class BlogsRepository {
         await this.dataSource.query(`
           DELETE
           FROM "Blogs"
-          WHERE "blogId" = $1
+          WHERE "id" = $1
       `, [blogId]);
     }
     async findBlogsForUser(userId) {

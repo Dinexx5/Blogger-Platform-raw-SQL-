@@ -7,10 +7,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class BlogsSAQueryRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   mapFoundBlogToBlogViewModel(blog): BlogSAViewModel {
     return {
       name: blog.name,
@@ -43,7 +40,11 @@ export class BlogsSAQueryRepository {
     const subQuery = `(${
       searchNameTerm ? `LOWER("name") LIKE '%' || LOWER('${searchNameTerm}') || '%'` : true
     })`;
-    const selectQuery = `SELECT blog.*, ban."isBanned",ban."banDate", o."userId", o."userLogin"
+    const selectQuery = `SELECT blog.*, ban."isBanned",ban."banDate", o."userId", o."userLogin",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "Blogs" blog
                     LEFT JOIN "BlogOwnerInfo" o
                     ON blog."id" = o."blogId"
@@ -61,7 +62,7 @@ export class BlogsSAQueryRepository {
                     LEFT JOIN "BlogOwnerInfo" o
                     ON blog."id" = o."blogId"
                     LEFT JOIN "BlogBansInfo" ban
-                    ON blog."id" = o."blogId"
+                    ON blog."id" = ban."blogId"
                     WHERE ${subQuery}`;
 
     const counter = await this.dataSource.query(counterQuery);
@@ -71,6 +72,7 @@ export class BlogsSAQueryRepository {
       pageSize,
       skippedBlogsCount,
     ]);
+    console.log(blogs);
 
     const blogsView = blogs.map(this.mapFoundBlogToBlogViewModel);
     return {

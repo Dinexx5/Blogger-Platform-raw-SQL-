@@ -25,7 +25,7 @@ let UsersBansForBlogRepository = class UsersBansForBlogRepository {
         this.dataSource = dataSource;
     }
     async createBan(userId, login, blogId, isBanned, banReason, banDate, bannedPostsIds) {
-        const banQuery = `INSERT INTO "UserBanForBlogs"
+        const banQuery = `INSERT INTO "UserBanForBlog"
                    ("userId", login, "blogId", "isBanned", "banReason", "banDate", "bannedPostsIds")
                    VALUES ($1, $2, $3, $4, $5, $6, $7)
                    RETURNING *;`;
@@ -42,7 +42,7 @@ let UsersBansForBlogRepository = class UsersBansForBlogRepository {
     async findBanByBlogAndUserId(blogId, userId) {
         const ban = await this.dataSource.query(`
           SELECT *
-          FROM "UserBanForBlogs"
+          FROM "UserBanForBlog"
           WHERE "blogId" = $1 AND "userId" = $2
       `, [blogId, userId]);
         return ban[0];
@@ -50,7 +50,7 @@ let UsersBansForBlogRepository = class UsersBansForBlogRepository {
     async unbanUser(userId, blogId) {
         await this.dataSource.query(`
           DELETE
-          FROM "UserBanForBlogs"
+          FROM "UserBanForBlog"
           WHERE "blogId" = $1 AND "userId" = $2
       `, [blogId, userId]);
     }

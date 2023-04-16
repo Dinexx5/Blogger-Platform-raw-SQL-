@@ -47,12 +47,16 @@ let BlogsQueryRepository = class BlogsQueryRepository {
                     ? `LOWER("name") LIKE '%' || LOWER('${searchNameTerm}') || '%' AND
          "userId" = ${userId}`
                     : true})`;
-        const selectQuery = `SELECT b.*, o."userId"
+        const selectQuery = `SELECT b.*, o."userId",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "Blogs" b
                     LEFT JOIN "BlogOwnerInfo" o
                     ON b."id" = o."blogId"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2
@@ -83,7 +87,9 @@ let BlogsQueryRepository = class BlogsQueryRepository {
     async findBlogById(blogId) {
         const bannedBlogsFromUsers = await this.bansRepository.getBannedBlogs();
         const bannedBlogs = await this.blogBansRepository.getBannedBlogs();
+        console.log(bannedBlogs);
         const allBannedBlogs = bannedBlogs.concat(bannedBlogsFromUsers);
+        console.log(allBannedBlogs);
         const foundBlog = await this.dataSource.query(`
           SELECT *
           FROM "Blogs"
@@ -91,7 +97,7 @@ let BlogsQueryRepository = class BlogsQueryRepository {
       `, [blogId]);
         if (!foundBlog.length)
             return null;
-        if (allBannedBlogs.includes(foundBlog[0].id.toString()))
+        if (allBannedBlogs.includes(foundBlog[0].id))
             return null;
         return this.mapFoundBlogToBlogViewModel(foundBlog[0]);
     }

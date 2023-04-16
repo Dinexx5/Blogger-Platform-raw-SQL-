@@ -22,6 +22,7 @@ import { paginatedViewModel } from '../../shared/models/pagination';
 import { BlogsQueryRepository } from './blogs.query-repo';
 import { BloggerCommentsQueryRepository } from './blogger.comments.query-repo';
 import { commentsForBloggerViewModel } from '../comments/comments.models';
+import { isBlogIdIntegerGuard } from '../auth/guards/param.blogId.integer.guard';
 
 @Controller('blogger/blogs')
 export class BloggerController {
@@ -62,7 +63,7 @@ export class BloggerController {
     await this.blogsService.UpdateBlogById(inputModel, params.blogId, userId);
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Delete(':blogId')
   async deleteBlog(@Param() params: blogParamModel, @Res() res: Response, @CurrentUser() userId) {
     await this.blogsService.deleteBlogById(params.blogId, userId);
@@ -80,7 +81,7 @@ export class BloggerController {
     const post = await this.postsService.createPost(inputModel, params.blogId, userId);
     return res.send(post);
   }
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Put(':blogId/posts/:postId')
   async updatePost(
     @Body() inputModel: updatePostModel,
@@ -91,7 +92,7 @@ export class BloggerController {
     await this.postsService.updatePostById(inputModel, params.postId, params.blogId, userId);
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Delete(':blogId/posts/:postId')
   async deletePost(
     @Param() params: blogAndPostParamModel,

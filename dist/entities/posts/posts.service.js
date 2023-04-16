@@ -40,7 +40,7 @@ let PostsService = class PostsService {
             title: createdPost.title,
             shortDescription: createdPost.shortDescription,
             content: createdPost.content,
-            blogId: createdPost.blogId,
+            blogId: createdPost.blogId.toString(),
             blogName: createdPost.blogName,
             createdAt: createdPost.createdAt,
             extendedLikesInfo: {

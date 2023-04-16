@@ -6,9 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isParamIntegerGuard = void 0;
+exports.isUserIdIntegerGuard = void 0;
 const common_1 = require("@nestjs/common");
-let isParamIntegerGuard = class isParamIntegerGuard {
+let isUserIdIntegerGuard = class isUserIdIntegerGuard {
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const userId = request.params.userId;
@@ -18,8 +18,8 @@ let isParamIntegerGuard = class isParamIntegerGuard {
         return true;
     }
 };
-isParamIntegerGuard = __decorate([
+isUserIdIntegerGuard = __decorate([
     (0, common_1.Injectable)()
-], isParamIntegerGuard);
-exports.isParamIntegerGuard = isParamIntegerGuard;
+], isUserIdIntegerGuard);
+exports.isUserIdIntegerGuard = isUserIdIntegerGuard;
 //# sourceMappingURL=param.integer.guard.js.map

@@ -4,12 +4,12 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { BanModel, UserParamModel } from '../users/userModels';
 import { Response } from 'express';
 import { CommandBus } from '@nestjs/cqrs';
-import { isParamIntegerGuard } from '../auth/guards/param.integer.guard';
+import { isUserIdIntegerGuard } from '../auth/guards/param.integer.guard';
 
 @Controller('sa/users')
 export class BansController {
   constructor(private commandBus: CommandBus) {}
-  @UseGuards(AuthGuard, isParamIntegerGuard)
+  @UseGuards(AuthGuard, isUserIdIntegerGuard)
   @Put(':userId/ban')
   async banUser(
     @Param() param: UserParamModel,

@@ -50,6 +50,6 @@ export class BlogsService {
     const blogOwnerInfo = await this.blogsRepository.findBlogOwnerInfo(blogId);
     if (!blog) throw new NotFoundException();
     if (blogOwnerInfo.userId.toString() !== userId) throw new ForbiddenException();
-    await this.blogsRepository.updateBlog(blog.id.toISOString(), name, description, websiteUrl);
+    await this.blogsRepository.updateBlog(blogId, name, description, websiteUrl);
   }
 }

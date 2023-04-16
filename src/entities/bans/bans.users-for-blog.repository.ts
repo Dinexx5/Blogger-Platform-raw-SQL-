@@ -28,7 +28,7 @@ export class UsersBansForBlogRepository {
     banDate: string,
     bannedPostsIds: string[],
   ) {
-    const banQuery = `INSERT INTO "UserBanForBlogs"
+    const banQuery = `INSERT INTO "UserBanForBlog"
                    ("userId", login, "blogId", "isBanned", "banReason", "banDate", "bannedPostsIds")
                    VALUES ($1, $2, $3, $4, $5, $6, $7)
                    RETURNING *;`;
@@ -46,7 +46,7 @@ export class UsersBansForBlogRepository {
     const ban = await this.dataSource.query(
       `
           SELECT *
-          FROM "UserBanForBlogs"
+          FROM "UserBanForBlog"
           WHERE "blogId" = $1 AND "userId" = $2
       `,
       [blogId, userId],
@@ -57,7 +57,7 @@ export class UsersBansForBlogRepository {
     await this.dataSource.query(
       `
           DELETE
-          FROM "UserBanForBlogs"
+          FROM "UserBanForBlog"
           WHERE "blogId" = $1 AND "userId" = $2
       `,
       [blogId, userId],

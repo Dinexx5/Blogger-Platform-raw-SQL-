@@ -123,7 +123,7 @@ export class BlogsRepository {
       `
           DELETE
           FROM "Blogs"
-          WHERE "blogId" = $1
+          WHERE "id" = $1
       `,
       [blogId],
     );

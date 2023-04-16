@@ -12,6 +12,8 @@ import { paginatedViewModel } from '../../shared/models/pagination';
 import { blogParamModel } from './blogs.models';
 import { BloggerBansQueryRepository } from './blogger.bans.query-repository';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
+import { isUserIdIntegerGuard } from '../auth/guards/param.integer.guard';
+import { isBlogIdIntegerGuard } from '../auth/guards/param.blogId.integer.guard';
 
 @Controller('blogger/users')
 export class BloggerUsersController {
@@ -19,7 +21,7 @@ export class BloggerUsersController {
     private commandBus: CommandBus,
     protected bloggerQueryRepository: BloggerBansQueryRepository,
   ) {}
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isUserIdIntegerGuard)
   @Put(':userId/ban')
   async banUser(
     @CurrentUser() userId,
@@ -30,7 +32,7 @@ export class BloggerUsersController {
     await this.commandBus.execute(new BanUserForBlogCommand(param.userId, inputModel, userId));
     return res.sendStatus(204);
   }
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, isBlogIdIntegerGuard)
   @Get('/blog/:blogId')
   async getBannedUsers(
     @CurrentUser() userId,

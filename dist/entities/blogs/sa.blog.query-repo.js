@@ -13,14 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogsSAQueryRepository = void 0;
-const mongoose_1 = require("@nestjs/mongoose");
-const blogs_schema_1 = require("./domain/blogs.schema");
-const mongoose_2 = require("mongoose");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let BlogsSAQueryRepository = class BlogsSAQueryRepository {
-    constructor(blogModel, dataSource) {
-        this.blogModel = blogModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     mapFoundBlogToBlogViewModel(blog) {
@@ -45,7 +41,11 @@ let BlogsSAQueryRepository = class BlogsSAQueryRepository {
         const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10, searchNameTerm = null, } = query;
         const skippedBlogsCount = (+pageNumber - 1) * +pageSize;
         const subQuery = `(${searchNameTerm ? `LOWER("name") LIKE '%' || LOWER('${searchNameTerm}') || '%'` : true})`;
-        const selectQuery = `SELECT blog.*, ban."isBanned",ban."banDate", o."userId", o."userLogin"
+        const selectQuery = `SELECT blog.*, ban."isBanned",ban."banDate", o."userId", o."userLogin",
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
                     FROM "Blogs" blog
                     LEFT JOIN "BlogOwnerInfo" o
                     ON blog."id" = o."blogId"
@@ -63,7 +63,7 @@ let BlogsSAQueryRepository = class BlogsSAQueryRepository {
                     LEFT JOIN "BlogOwnerInfo" o
                     ON blog."id" = o."blogId"
                     LEFT JOIN "BlogBansInfo" ban
-                    ON blog."id" = o."blogId"
+                    ON blog."id" = ban."blogId"
                     WHERE ${subQuery}`;
         const counter = await this.dataSource.query(counterQuery);
         const count = counter[0].count;
@@ -72,6 +72,7 @@ let BlogsSAQueryRepository = class BlogsSAQueryRepository {
             pageSize,
             skippedBlogsCount,
         ]);
+        console.log(blogs);
         const blogsView = blogs.map(this.mapFoundBlogToBlogViewModel);
         return {
             pagesCount: Math.ceil(+count / +pageSize),
@@ -83,10 +84,8 @@ let BlogsSAQueryRepository = class BlogsSAQueryRepository {
     }
 };
 BlogsSAQueryRepository = __decorate([
-    __param(0, (0, mongoose_1.InjectModel)(blogs_schema_1.Blog.name)),
-    __param(1, (0, typeorm_1.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        typeorm_2.DataSource])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], BlogsSAQueryRepository);
 exports.BlogsSAQueryRepository = BlogsSAQueryRepository;
 //# sourceMappingURL=sa.blog.query-repo.js.map

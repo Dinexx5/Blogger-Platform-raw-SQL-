@@ -86,7 +86,7 @@ export class PostsRepository {
           UPDATE "Posts"
           SET "title"= '${title}', "shortDescription"= '${shortDescription}',
            "content"= '${content}', "blogId"= '${blogId}'
-          WHERE "postId" = $1
+          WHERE "id" = $1
       `,
       [postId],
     );

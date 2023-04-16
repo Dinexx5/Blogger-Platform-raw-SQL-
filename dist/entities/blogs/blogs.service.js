@@ -56,7 +56,7 @@ let BlogsService = class BlogsService {
             throw new common_1.NotFoundException();
         if (blogOwnerInfo.userId.toString() !== userId)
             throw new common_1.ForbiddenException();
-        await this.blogsRepository.updateBlog(blog.id.toISOString(), name, description, websiteUrl);
+        await this.blogsRepository.updateBlog(blogId, name, description, websiteUrl);
     }
 };
 BlogsService = __decorate([

@@ -57,7 +57,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersSAController.prototype, "createUser", null);
 __decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard, param_integer_guard_1.isParamIntegerGuard),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard, param_integer_guard_1.isUserIdIntegerGuard),
     (0, common_1.Delete)(':userId'),
     __param(0, (0, common_1.Param)('userId')),
     __param(1, (0, common_1.Res)()),

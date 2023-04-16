@@ -21,6 +21,8 @@ const ban_user_for_blog_use_case_1 = require("./application/use-cases/ban.user.f
 const blogs_models_1 = require("./blogs.models");
 const blogger_bans_query_repository_1 = require("./blogger.bans.query-repository");
 const current_user_decorator_1 = require("../../shared/decorators/current-user.decorator");
+const param_integer_guard_1 = require("../auth/guards/param.integer.guard");
+const param_blogId_integer_guard_1 = require("../auth/guards/param.blogId.integer.guard");
 let BloggerUsersController = class BloggerUsersController {
     constructor(commandBus, bloggerQueryRepository) {
         this.commandBus = commandBus;
@@ -36,7 +38,7 @@ let BloggerUsersController = class BloggerUsersController {
     }
 };
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_integer_guard_1.isUserIdIntegerGuard),
     (0, common_1.Put)(':userId/ban'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Param)()),
@@ -48,7 +50,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BloggerUsersController.prototype, "banUser", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAccessAuthGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
     (0, common_1.Get)('/blog/:blogId'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Query)()),
