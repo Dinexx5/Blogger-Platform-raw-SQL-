@@ -28,14 +28,14 @@ let CommentsQueryRepository = class CommentsQueryRepository {
             id: comment.id.toString(),
             content: comment.content,
             commentatorInfo: {
-                userId: comment.userId,
+                userId: comment.userId.toString(),
                 userLogin: comment.userLogin,
             },
             createdAt: comment.createdAt,
             likesInfo: {
                 likesCount: comment.likesCount,
                 dislikesCount: comment.dislikesCount,
-                myStatus: comment.myStatus,
+                myStatus: comment.myStatus || 'None',
             },
         };
     }

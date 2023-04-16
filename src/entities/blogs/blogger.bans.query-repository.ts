@@ -48,7 +48,7 @@ export class BloggerBansQueryRepository {
       searchLoginTerm ? `LOWER("login") LIKE '%' || LOWER('${searchLoginTerm}') || '%'` : true
     })`;
     const selectQuery = `SELECT "userId", "login", "isBanned","banDate","banReason"
-                    FROM "UserBanForBlogs"
+                    FROM "UserBanForBlog"
                     WHERE ${subQuery}
                     ORDER BY 
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
@@ -57,7 +57,7 @@ export class BloggerBansQueryRepository {
                     OFFSET $3
                     `;
     const counterQuery = `SELECT COUNT(*)
-                    FROM "UserBanForBlogs" u
+                    FROM "UserBanForBlog" u
                     WHERE ${subQuery}`;
     const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;

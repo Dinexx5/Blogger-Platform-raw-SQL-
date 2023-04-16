@@ -37,7 +37,7 @@ let PostsQueryRepository = class PostsQueryRepository {
             extendedLikesInfo: {
                 likesCount: post.likesCount,
                 dislikesCount: post.dislikesCount,
-                myStatus: post.myStatus,
+                myStatus: post.myStatus || 'None',
                 newestLikes: post.newestLikes,
             },
         };

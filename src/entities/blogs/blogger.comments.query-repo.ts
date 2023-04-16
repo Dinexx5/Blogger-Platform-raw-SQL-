@@ -1,18 +1,16 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { BlogsRepository } from './blogs.repository';
 import { PostsRepository } from '../posts/posts.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../comments/comments.schema';
-import { Model } from 'mongoose';
 import { commentsForBloggerViewModel } from '../comments/comments.models';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CommentsLikesRepository } from '../likes/comments.likes.repository';
 
 export class BloggerCommentsQueryRepository {
   constructor(
     protected blogsRepository: BlogsRepository,
     protected postsRepository: PostsRepository,
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    protected commentsLikesRepository: CommentsLikesRepository,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   mapCommentsToViewModel(comment): commentsForBloggerViewModel {
@@ -20,20 +18,20 @@ export class BloggerCommentsQueryRepository {
       id: comment.id.toString(),
       content: comment.content,
       commentatorInfo: {
-        userId: comment.commentatorInfo.userId,
-        userLogin: comment.commentatorInfo.userLogin,
+        userId: comment.userId.toString(),
+        userLogin: comment.userLogin,
       },
       createdAt: comment.createdAt,
       likesInfo: {
-        likesCount: comment.likesInfo.likesCount,
-        dislikesCount: comment.likesInfo.dislikesCount,
-        myStatus: comment.likesInfo.myStatus,
+        likesCount: comment.likesCount,
+        dislikesCount: comment.dislikesCount,
+        myStatus: comment.myStatus,
       },
       postInfo: {
-        id: comment.postInfo.id,
-        title: comment.postInfo.title,
-        blogId: comment.postInfo.blogId,
-        blogName: comment.postInfo.blogName,
+        id: comment.postId.toString(),
+        title: comment.title,
+        blogId: comment.blogId,
+        blogName: comment.blogName,
       },
     };
   }
@@ -51,8 +49,7 @@ export class BloggerCommentsQueryRepository {
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    LEFT JOIN "LikesInfo" li
-                    ON c."id" = li."commentId"
+                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}
@@ -66,8 +63,7 @@ export class BloggerCommentsQueryRepository {
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    LEFT JOIN "LikesInfo" li
-                    ON c."id" = li."commentId"
+                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}`;
@@ -79,7 +75,7 @@ export class BloggerCommentsQueryRepository {
       pageSize,
       skippedBlogsCount,
     ]);
-
+    await this.countLikesForComments(comments, userId);
     const commentsView = comments.map(this.mapCommentsToViewModel);
     return {
       pagesCount: Math.ceil(+count / +pageSize),
@@ -88,5 +84,21 @@ export class BloggerCommentsQueryRepository {
       totalCount: +count,
       items: commentsView,
     };
+  }
+  async countLikesForComments(comments, userId: string) {
+    for (const comment of comments) {
+      const foundLikes = await this.commentsLikesRepository.findLikesForComment(
+        comment.id.toString(),
+      );
+      if (userId) {
+        const likeOfUser = foundLikes.find((like) => like.userId === userId);
+        const likeStatus = likeOfUser.likeStatus;
+        comment.myStatus = likeStatus;
+      }
+      const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
+      const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
+      comment.likesCount = likesCount;
+      comment.dislikesCount = dislikesCount;
+    }
   }
 }

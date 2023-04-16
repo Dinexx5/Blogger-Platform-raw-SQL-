@@ -15,16 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloggerCommentsQueryRepository = void 0;
 const blogs_repository_1 = require("./blogs.repository");
 const posts_repository_1 = require("../posts/posts.repository");
-const mongoose_1 = require("@nestjs/mongoose");
-const comments_schema_1 = require("../comments/comments.schema");
-const mongoose_2 = require("mongoose");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const comments_likes_repository_1 = require("../likes/comments.likes.repository");
 let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
-    constructor(blogsRepository, postsRepository, commentModel, dataSource) {
+    constructor(blogsRepository, postsRepository, commentsLikesRepository, dataSource) {
         this.blogsRepository = blogsRepository;
         this.postsRepository = postsRepository;
-        this.commentModel = commentModel;
+        this.commentsLikesRepository = commentsLikesRepository;
         this.dataSource = dataSource;
     }
     mapCommentsToViewModel(comment) {
@@ -32,20 +30,20 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
             id: comment.id.toString(),
             content: comment.content,
             commentatorInfo: {
-                userId: comment.commentatorInfo.userId,
-                userLogin: comment.commentatorInfo.userLogin,
+                userId: comment.userId.toString(),
+                userLogin: comment.userLogin,
             },
             createdAt: comment.createdAt,
             likesInfo: {
-                likesCount: comment.likesInfo.likesCount,
-                dislikesCount: comment.likesInfo.dislikesCount,
-                myStatus: comment.likesInfo.myStatus,
+                likesCount: comment.likesCount,
+                dislikesCount: comment.dislikesCount,
+                myStatus: comment.myStatus,
             },
             postInfo: {
-                id: comment.postInfo.id,
-                title: comment.postInfo.title,
-                blogId: comment.postInfo.blogId,
-                blogName: comment.postInfo.blogName,
+                id: comment.postId.toString(),
+                title: comment.title,
+                blogId: comment.blogId,
+                blogName: comment.blogName,
             },
         };
     }
@@ -58,8 +56,7 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    LEFT JOIN "LikesInfo" li
-                    ON c."id" = li."commentId"
+                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}
@@ -73,8 +70,7 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    LEFT JOIN "LikesInfo" li
-                    ON c."id" = li."commentId"
+                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}`;
@@ -85,6 +81,7 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
             pageSize,
             skippedBlogsCount,
         ]);
+        await this.countLikesForComments(comments, userId);
         const commentsView = comments.map(this.mapCommentsToViewModel);
         return {
             pagesCount: Math.ceil(+count / +pageSize),
@@ -94,13 +91,26 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
             items: commentsView,
         };
     }
+    async countLikesForComments(comments, userId) {
+        for (const comment of comments) {
+            const foundLikes = await this.commentsLikesRepository.findLikesForComment(comment.id.toString());
+            if (userId) {
+                const likeOfUser = foundLikes.find((like) => like.userId === userId);
+                const likeStatus = likeOfUser.likeStatus;
+                comment.myStatus = likeStatus;
+            }
+            const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
+            const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
+            comment.likesCount = likesCount;
+            comment.dislikesCount = dislikesCount;
+        }
+    }
 };
 BloggerCommentsQueryRepository = __decorate([
-    __param(2, (0, mongoose_1.InjectModel)(comments_schema_1.Comment.name)),
     __param(3, (0, typeorm_1.InjectDataSource)()),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository,
         posts_repository_1.PostsRepository,
-        mongoose_2.Model,
+        comments_likes_repository_1.CommentsLikesRepository,
         typeorm_2.DataSource])
 ], BloggerCommentsQueryRepository);
 exports.BloggerCommentsQueryRepository = BloggerCommentsQueryRepository;

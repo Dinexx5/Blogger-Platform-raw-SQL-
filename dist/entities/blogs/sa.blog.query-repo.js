@@ -28,7 +28,7 @@ let BlogsSAQueryRepository = class BlogsSAQueryRepository {
             createdAt: blog.createdAt,
             id: blog.id.toString(),
             blogOwnerInfo: {
-                userId: blog.userId,
+                userId: blog.userId.toString(),
                 userLogin: blog.userLogin,
             },
             banInfo: {
