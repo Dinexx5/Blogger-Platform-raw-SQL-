@@ -1,6 +1,3 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from './domain/blogs.schema';
-import { Model } from 'mongoose';
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { BlogSAViewModel } from './blogs.models';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -51,7 +48,7 @@ export class BlogsSAQueryRepository {
                     LEFT JOIN "BlogBansInfo" ban
                     ON blog."id" = ban."blogId"
                     WHERE ${subQuery}
-                    ORDER BY 
+                    ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2

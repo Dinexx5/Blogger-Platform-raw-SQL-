@@ -13,17 +13,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloggerBansQueryRepository = void 0;
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const bans_schema_1 = require("../bans/application/domain/bans.schema");
 const common_1 = require("@nestjs/common");
 const blogs_repository_1 = require("./blogs.repository");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let BloggerBansQueryRepository = class BloggerBansQueryRepository {
-    constructor(blogsRepository, banUserForBlogModel, dataSource) {
+    constructor(blogsRepository, dataSource) {
         this.blogsRepository = blogsRepository;
-        this.banUserForBlogModel = banUserForBlogModel;
         this.dataSource = dataSource;
     }
     mapFoundBansToViewModel(ban) {
@@ -38,7 +34,7 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
         };
     }
     async getAllBannedUsersForBlog(query, blogId, userId) {
-        const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10, searchLoginTerm = null, } = query;
+        const { sortDirection = 'desc', sortBy = 'userId', pageNumber = 1, pageSize = 10, searchLoginTerm = null, } = query;
         const skippedBlogsCount = (+pageNumber - 1) * +pageSize;
         const blog = await this.blogsRepository.findBlogInstance(blogId);
         if (!blog)
@@ -77,10 +73,8 @@ let BloggerBansQueryRepository = class BloggerBansQueryRepository {
     }
 };
 BloggerBansQueryRepository = __decorate([
-    __param(1, (0, mongoose_1.InjectModel)(bans_schema_1.UserForBlogBan.name)),
-    __param(2, (0, typeorm_1.InjectDataSource)()),
+    __param(1, (0, typeorm_1.InjectDataSource)()),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository,
-        mongoose_2.Model,
         typeorm_2.DataSource])
 ], BloggerBansQueryRepository);
 exports.BloggerBansQueryRepository = BloggerBansQueryRepository;

@@ -11,7 +11,6 @@ import { DataSource } from 'typeorm';
 export class BloggerBansQueryRepository {
   constructor(
     protected blogsRepository: BlogsRepository,
-    @InjectModel(UserForBlogBan.name) private banUserForBlogModel: Model<UserForBlogBanDocument>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   mapFoundBansToViewModel(ban: UserForBlogBanDocument): BannedForBlogUserViewModel {
@@ -32,7 +31,7 @@ export class BloggerBansQueryRepository {
   ): Promise<paginatedViewModel<BannedForBlogUserViewModel[]>> {
     const {
       sortDirection = 'desc',
-      sortBy = 'createdAt',
+      sortBy = 'userId',
       pageNumber = 1,
       pageSize = 10,
       searchLoginTerm = null,
