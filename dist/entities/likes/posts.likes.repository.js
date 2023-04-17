@@ -59,13 +59,13 @@ let PostsLikesRepository = class PostsLikesRepository {
         const allLikes = await this.dataSource.query(`
           SELECT *
           FROM "PostsLikes"
-          WHERE "postId" = $1 AND "userId" ${bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`}
+          WHERE "postId" = $1 AND "userId" ${bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`} AND "likeStatus" = 'Like'
       `, [postId]);
         const threeLatestLikes = allLikes.slice(0, 3);
         const mappedThreeLatestLikes = threeLatestLikes.map((like) => {
             return {
                 addedAt: like.createdAt,
-                userId: like.userId,
+                userId: like.userId.toString(),
                 login: like.login,
             };
         });

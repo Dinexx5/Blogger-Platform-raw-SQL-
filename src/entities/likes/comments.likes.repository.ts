@@ -35,7 +35,7 @@ export class CommentsLikesRepository {
       `
           UPDATE "CommentsLikes"
           SET "likeStatus"= $3
-          WHERE "postId" = $1 AND "userId" = $2
+          WHERE "commentId" = $1 AND "userId" = $2
       `,
       [commentId, userId, likeStatus],
     );

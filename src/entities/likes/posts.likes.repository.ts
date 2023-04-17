@@ -63,7 +63,7 @@ export class PostsLikesRepository {
           FROM "PostsLikes"
           WHERE "postId" = $1 AND "userId" ${
             bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`
-          }
+          } AND "likeStatus" = 'Like'
       `,
       [postId],
     );
@@ -71,7 +71,7 @@ export class PostsLikesRepository {
     const mappedThreeLatestLikes = threeLatestLikes.map((like) => {
       return {
         addedAt: like.createdAt,
-        userId: like.userId,
+        userId: like.userId.toString(),
         login: like.login,
       };
     });
