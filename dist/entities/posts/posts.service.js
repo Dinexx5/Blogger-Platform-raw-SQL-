@@ -80,7 +80,7 @@ let PostsService = class PostsService {
         if (!post)
             return null;
         const forbiddenPosts = await this.usersBansForBlogsRepo.getBannedPostsForUser(userId);
-        if (forbiddenPosts.includes(post.id.toString()))
+        if (forbiddenPosts.includes(postId))
             throw new common_1.ForbiddenException();
         return await this.commentsService.createComment(postId, inputModel, userId);
     }

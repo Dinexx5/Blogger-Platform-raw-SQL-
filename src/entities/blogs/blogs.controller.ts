@@ -7,6 +7,7 @@ import { GetUserGuard } from '../auth/guards/getuser.guard';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { PostViewModel } from '../posts/posts.schema';
 import { BlogViewModel } from './blogs.models';
+import { isBlogIdIntegerGuard } from '../auth/guards/param.blogId.integer.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -21,19 +22,20 @@ export class BlogsController {
       await this.blogsQueryRepository.getAllBlogs(paginationQuery);
     return returnedBlogs;
   }
-  @Get(':id')
-  async getBlog(@Param('id') id: string, @Res() res: Response) {
+  @UseGuards(isBlogIdIntegerGuard)
+  @Get(':blogId')
+  async getBlog(@Param('blogId') id: string, @Res() res: Response) {
     const blog: BlogViewModel | null = await this.blogsQueryRepository.findBlogById(id);
     if (!blog) {
       return res.sendStatus(404);
     }
     return res.send(blog);
   }
-  @UseGuards(GetUserGuard)
-  @Get(':id/posts')
+  @UseGuards(GetUserGuard, isBlogIdIntegerGuard)
+  @Get(':blogId/posts')
   async getPosts(
     @CurrentUser() userId,
-    @Param('id') blogId: string,
+    @Param('blogId') blogId: string,
     @Query() paginationQuery,
     @Res() res: Response,
   ) {

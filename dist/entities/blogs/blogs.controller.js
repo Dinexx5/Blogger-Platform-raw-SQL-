@@ -18,6 +18,7 @@ const blogs_query_repo_1 = require("./blogs.query-repo");
 const posts_query_repo_1 = require("../posts/posts.query-repo");
 const getuser_guard_1 = require("../auth/guards/getuser.guard");
 const current_user_decorator_1 = require("../../shared/decorators/current-user.decorator");
+const param_blogId_integer_guard_1 = require("../auth/guards/param.blogId.integer.guard");
 let BlogsController = class BlogsController {
     constructor(blogsQueryRepository, postsQueryRepository) {
         this.blogsQueryRepository = blogsQueryRepository;
@@ -50,18 +51,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "getBlogs", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(param_blogId_integer_guard_1.isBlogIdIntegerGuard),
+    (0, common_1.Get)(':blogId'),
+    __param(0, (0, common_1.Param)('blogId')),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], BlogsController.prototype, "getBlog", null);
 __decorate([
-    (0, common_1.UseGuards)(getuser_guard_1.GetUserGuard),
-    (0, common_1.Get)(':id/posts'),
+    (0, common_1.UseGuards)(getuser_guard_1.GetUserGuard, param_blogId_integer_guard_1.isBlogIdIntegerGuard),
+    (0, common_1.Get)(':blogId/posts'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('blogId')),
     __param(2, (0, common_1.Query)()),
     __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
