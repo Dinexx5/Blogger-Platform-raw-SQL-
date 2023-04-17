@@ -37,7 +37,7 @@ export class CommentsQueryRepository {
     const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
     const bannedComments = await this.bansRepository.getBannedComments();
 
-    const subQuery = `"id" ${bannedComments.length ? `NOT IN (${bannedComments})` : `IS NOT NULL`} 
+    const subQuery = `"id" ${bannedComments.length ? `NOT IN (${bannedComments})` : `IS NOT NULL`}
     AND "postId" = ${postId}`;
 
     const selectQuery = `SELECT c.*, pi."postId", ci."userId", ci."userLogin",
@@ -58,7 +58,11 @@ export class CommentsQueryRepository {
                     OFFSET $3
                     `;
     const counterQuery = `SELECT COUNT(*)
-                    FROM "Comments" 
+                    FROM "Comments" c 
+                    LEFT JOIN "PostInfoForComment" pi
+                    ON c."id" = pi."commentId"
+                    LEFT JOIN "CommentatorInfo" ci
+                    ON c."id" = ci."commentId" 
                     WHERE ${subQuery}`;
 
     const counter = await this.dataSource.query(counterQuery);
