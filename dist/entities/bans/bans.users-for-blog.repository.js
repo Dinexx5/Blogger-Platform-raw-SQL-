@@ -14,14 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersBansForBlogRepository = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const bans_schema_1 = require("./application/domain/bans.schema");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let UsersBansForBlogRepository = class UsersBansForBlogRepository {
-    constructor(banUserForBlogModel, dataSource) {
-        this.banUserForBlogModel = banUserForBlogModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     async createBan(userId, login, blogId, isBanned, banReason, banDate, bannedPostsIds) {
@@ -55,29 +51,28 @@ let UsersBansForBlogRepository = class UsersBansForBlogRepository {
       `, [blogId, userId]);
     }
     async countBannedUsers() {
-        return this.banUserForBlogModel.countDocuments({});
+        const counterQuery = `SELECT COUNT(*)
+                    FROM "UserBanForBlog" `;
+        const counter = await this.dataSource.query(counterQuery);
+        return counter[0].count;
     }
     async getBannedPostsForUser(userId) {
         const bannedUsersCount = await this.countBannedUsers();
         if (!bannedUsersCount)
             return [];
-        const allBansForUser = await this.banUserForBlogModel.find({ userId: userId }).lean();
+        const allBansForUser = await this.dataSource.query(`SELECT * FROM "UserBanForBlog"
+        WHERE "userId" = ${userId}`);
         const forbiddenPosts = [];
         allBansForUser.forEach((ban) => {
-            forbiddenPosts.push(...ban.bannedPostsId);
+            forbiddenPosts.push(...ban.bannedPostsIds);
         });
         return forbiddenPosts;
-    }
-    async save(instance) {
-        instance.save();
     }
 };
 UsersBansForBlogRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(bans_schema_1.UserForBlogBan.name)),
-    __param(1, (0, typeorm_1.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        typeorm_2.DataSource])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], UsersBansForBlogRepository);
 exports.UsersBansForBlogRepository = UsersBansForBlogRepository;
 //# sourceMappingURL=bans.users-for-blog.repository.js.map

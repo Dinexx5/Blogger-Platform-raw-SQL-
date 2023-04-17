@@ -15,10 +15,7 @@ import { createBanModel } from './bans.models';
 
 @Injectable()
 export class UsersBansForBlogRepository {
-  constructor(
-    @InjectModel(UserForBlogBan.name) private banUserForBlogModel: Model<UserForBlogBanDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createBan(
     userId: string,
     login: string,
@@ -64,19 +61,22 @@ export class UsersBansForBlogRepository {
     );
   }
   async countBannedUsers() {
-    return this.banUserForBlogModel.countDocuments({});
+    const counterQuery = `SELECT COUNT(*)
+                    FROM "UserBanForBlog" `;
+    const counter = await this.dataSource.query(counterQuery);
+    return counter[0].count;
   }
   async getBannedPostsForUser(userId: string) {
     const bannedUsersCount = await this.countBannedUsers();
     if (!bannedUsersCount) return [];
-    const allBansForUser = await this.banUserForBlogModel.find({ userId: userId }).lean();
+    const allBansForUser = await this.dataSource.query(
+      `SELECT * FROM "UserBanForBlog"
+        WHERE "userId" = ${userId}`,
+    );
     const forbiddenPosts = [];
     allBansForUser.forEach((ban) => {
-      forbiddenPosts.push(...ban.bannedPostsId);
+      forbiddenPosts.push(...ban.bannedPostsIds);
     });
     return forbiddenPosts;
-  }
-  async save(instance: any) {
-    instance.save();
   }
 }

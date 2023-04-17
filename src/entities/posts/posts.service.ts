@@ -96,7 +96,7 @@ export class PostsService {
     const post = await this.postsRepository.findPostInstance(postId);
     if (!post) return null;
     const forbiddenPosts = await this.usersBansForBlogsRepo.getBannedPostsForUser(userId);
-    if (forbiddenPosts.includes(post.id.toString())) throw new ForbiddenException();
+    if (forbiddenPosts.includes(postId)) throw new ForbiddenException();
     return await this.commentsService.createComment(postId, inputModel, userId);
   }
 
