@@ -64,6 +64,7 @@ export class PostsLikesRepository {
           WHERE "postId" = $1 AND "userId" ${
             bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`
           } AND "likeStatus" = 'Like'
+          ORDER BY "createdAt" DESC
       `,
       [postId],
     );

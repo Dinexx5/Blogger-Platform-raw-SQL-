@@ -60,6 +60,7 @@ let PostsLikesRepository = class PostsLikesRepository {
           SELECT *
           FROM "PostsLikes"
           WHERE "postId" = $1 AND "userId" ${bannedUsers.length ? `NOT IN (${bannedUsers})` : `IS NOT NULL`} AND "likeStatus" = 'Like'
+          ORDER BY "createdAt" DESC
       `, [postId]);
         const threeLatestLikes = allLikes.slice(0, 3);
         const mappedThreeLatestLikes = threeLatestLikes.map((like) => {
