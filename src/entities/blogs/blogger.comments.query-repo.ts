@@ -30,7 +30,7 @@ export class BloggerCommentsQueryRepository {
       postInfo: {
         id: comment.postId.toString(),
         title: comment.title,
-        blogId: comment.blogId,
+        blogId: comment.blogId.toString(),
         blogName: comment.blogName,
       },
     };
@@ -40,7 +40,7 @@ export class BloggerCommentsQueryRepository {
     userId: string,
   ): Promise<paginatedViewModel<commentsForBloggerViewModel[]>> {
     const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
-    const skippedBlogsCount = (+pageNumber - 1) * +pageSize;
+    const skippedCommentsCount = (+pageNumber - 1) * +pageSize;
 
     const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
     const allPosts = await this.postsRepository.findPostsToGetComments(allBlogs);
@@ -68,17 +68,17 @@ export class BloggerCommentsQueryRepository {
     const comments = await this.dataSource.query(selectQuery, [
       sortDirection,
       pageSize,
-      skippedBlogsCount,
+      skippedCommentsCount,
     ]);
 
-    const count = comments.length;
     await this.countLikesForComments(comments, userId);
     const commentsView = comments.map(this.mapCommentsToViewModel);
+    const count = commentsView.length;
     return {
-      pagesCount: Math.ceil(+count / +pageSize),
+      pagesCount: Math.ceil(count / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +count,
+      totalCount: count,
       items: commentsView,
     };
   }
