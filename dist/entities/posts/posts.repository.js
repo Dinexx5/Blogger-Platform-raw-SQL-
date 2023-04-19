@@ -76,12 +76,11 @@ let PostsRepository = class PostsRepository {
     async findPostsForUser(bannedBlog) {
         if (bannedBlog.length === 0)
             return [];
-        const bannedBlogsStrings = bannedBlog.join();
         const posts = await this.dataSource.query(`
           SELECT *
           FROM "Posts"
           WHERE "blogId" IN ($1)
-      `, [bannedBlogsStrings]);
+      `, [bannedBlog]);
         return posts.map((post) => post.id.toString());
     }
 };
