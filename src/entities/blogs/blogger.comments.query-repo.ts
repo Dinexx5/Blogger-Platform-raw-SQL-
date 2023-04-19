@@ -45,7 +45,7 @@ export class BloggerCommentsQueryRepository {
     const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
     const allPosts = await this.postsRepository.findPostsForUser(allBlogs);
 
-    const subQuery = `"postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}`;
+    const subQuery = `${allPosts.length ? `"postId" IN (${allPosts})` : `false`}`;
     const selectQuery = `SELECT c.*, ci.*, pi.*,
                                 CASE
                                  WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
