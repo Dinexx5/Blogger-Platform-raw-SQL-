@@ -23,9 +23,9 @@ export class BloggerCommentsQueryRepository {
       },
       createdAt: comment.createdAt,
       likesInfo: {
-        likesCount: comment.likesCount,
-        dislikesCount: comment.dislikesCount,
-        myStatus: comment.myStatus,
+        likesCount: comment.likesCount || 0,
+        dislikesCount: comment.dislikesCount || 0,
+        myStatus: comment.myStatus || 'None',
       },
       postInfo: {
         id: comment.postId.toString(),
@@ -45,7 +45,8 @@ export class BloggerCommentsQueryRepository {
     const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
     const allPosts = await this.postsRepository.findPostsForUser(allBlogs);
 
-    const selectQuery = `SELECT c.*, ci.*, li*, pi*,
+    const subQuery = `"postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}`;
+    const selectQuery = `SELECT c.*, ci.*, pi.*,
                                 CASE
                                  WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
                                  ELSE 1
@@ -56,29 +57,21 @@ export class BloggerCommentsQueryRepository {
                     
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
-                    WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}
+                    WHERE ${subQuery}
                     ORDER BY toOrder,
                       CASE when $1 = 'desc' then "${sortBy}" END DESC,
                       CASE when $1 = 'asc' then "${sortBy}" END ASC
                     LIMIT $2
                     OFFSET $3
                     `;
-    const counterQuery = `SELECT COUNT(*)
-                    FROM "Comments" c
-                    LEFT JOIN "CommentatorInfo" ci
-                    ON c."id" = ci."commentId"
-                    
-                    LEFT JOIN "PostInfoForComment" pi
-                    ON c."id" = pi."commentId"
-                    WHERE "postId" ${allPosts.length ? `IN (${allPosts})` : `IS NOT NULL`}`;
-
-    const counter = await this.dataSource.query(counterQuery);
-    const count = counter[0].count;
+    console.log(selectQuery);
     const comments = await this.dataSource.query(selectQuery, [
       sortDirection,
       pageSize,
       skippedBlogsCount,
     ]);
+
+    const count = comments.length;
     await this.countLikesForComments(comments, userId);
     const commentsView = comments.map(this.mapCommentsToViewModel);
     return {
@@ -94,10 +87,10 @@ export class BloggerCommentsQueryRepository {
       const foundLikes = await this.commentsLikesRepository.findLikesForComment(
         comment.id.toString(),
       );
-      if (userId) {
-        const likeOfUser = foundLikes.find((like) => like.userId === userId);
-        const likeStatus = likeOfUser.likeStatus;
-        comment.myStatus = likeStatus;
+      if (!foundLikes) return;
+      const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
+      if (likeOfUser) {
+        comment.myStatus = likeOfUser.likeStatus;
       }
       const likesCount = foundLikes.filter((like) => like.likeStatus === 'Like').length;
       const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;

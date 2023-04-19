@@ -35,10 +35,10 @@ let PostsQueryRepository = class PostsQueryRepository {
             blogName: post.blogName,
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                likesCount: post.likesCount,
-                dislikesCount: post.dislikesCount,
+                likesCount: post.likesCount || 0,
+                dislikesCount: post.dislikesCount || 0,
                 myStatus: post.myStatus || 'None',
-                newestLikes: post.newestLikes,
+                newestLikes: post.newestLikes || [],
             },
         };
     }
@@ -63,16 +63,12 @@ let PostsQueryRepository = class PostsQueryRepository {
                     LIMIT $2
                     OFFSET $3
                     `;
-        const counterQuery = `SELECT COUNT(*)
-                    FROM "Posts" 
-                    WHERE ${subQuery}`;
-        const counter = await this.dataSource.query(counterQuery);
-        const count = counter[0].count;
         const posts = await this.dataSource.query(selectQuery, [
             sortDirection,
             pageSize,
             skippedPostsNumber,
         ]);
+        const count = posts.length;
         await this.countLikesForPosts(posts, userId);
         const postsView = posts.map(this.mapperToPostViewModel);
         return {
@@ -86,6 +82,8 @@ let PostsQueryRepository = class PostsQueryRepository {
     async countLikesForPosts(posts, userId) {
         for (const post of posts) {
             const foundLikes = await this.postsLikesRepository.findLikesForPost(post.id.toString());
+            if (!foundLikes)
+                return;
             const threeLatestLikes = await this.postsLikesRepository.findThreeLatestLikes(post.id.toString());
             if (userId) {
                 const likeOfUser = foundLikes.find((like) => like.userId.toString() === userId);
