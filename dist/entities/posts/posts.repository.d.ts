@@ -6,5 +6,6 @@ export declare class PostsRepository {
     findPostInstance(postId: string): Promise<any>;
     deletePost(postId: string): Promise<void>;
     updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<void>;
-    findPostsForUser(bannedBlog: string[]): Promise<any>;
+    findPostsForUser(blogs: string[]): Promise<any>;
+    findPostsToGetComments(blogs: string[]): Promise<any>;
 }

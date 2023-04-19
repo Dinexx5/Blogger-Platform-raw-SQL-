@@ -73,15 +73,25 @@ let PostsRepository = class PostsRepository {
           WHERE "id" = $1
       `, [postId]);
     }
-    async findPostsForUser(bannedBlog) {
-        if (bannedBlog.length === 0)
+    async findPostsForUser(blogs) {
+        if (blogs.length === 0)
             return [];
-        const bannedBlogsStrings = bannedBlog.join();
+        const bannedBlogsStrings = blogs.join();
         const posts = await this.dataSource.query(`
           SELECT *
           FROM "Posts"
           WHERE "blogId" IN ($1)
       `, [bannedBlogsStrings]);
+        return posts.map((post) => post.id.toString());
+    }
+    async findPostsToGetComments(blogs) {
+        if (blogs.length === 0)
+            return [];
+        const posts = await this.dataSource.query(`
+          SELECT *
+          FROM "Posts"
+          WHERE "blogId" IN (${blogs})
+      `);
         return posts.map((post) => post.id.toString());
     }
 };

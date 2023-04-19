@@ -43,7 +43,7 @@ export class BloggerCommentsQueryRepository {
     const skippedBlogsCount = (+pageNumber - 1) * +pageSize;
 
     const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
-    const allPosts = await this.postsRepository.findPostsForUser(allBlogs);
+    const allPosts = await this.postsRepository.findPostsToGetComments(allBlogs);
 
     const subQuery = `${allPosts.length ? `"postId" IN (${allPosts})` : `false`}`;
     const selectQuery = `SELECT c.*, ci.*, pi.*,
