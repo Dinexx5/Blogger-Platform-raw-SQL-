@@ -64,7 +64,21 @@ export class BloggerCommentsQueryRepository {
                     LIMIT $2
                     OFFSET $3
                     `;
-    console.log(selectQuery);
+    const counterQuery = `SELECT c.*, ci."userId", ci."userLogin", pi.*,
+                                CASE
+                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
+                                 ELSE 1
+                                END toOrder
+                    FROM "Comments" c
+                    LEFT JOIN "CommentatorInfo" ci
+                    ON c."id" = ci."commentId"
+                    
+                    LEFT JOIN "PostInfoForComment" pi
+                    ON c."id" = pi."commentId"
+                    WHERE ${subQuery}`;
+
+    const counter = await this.dataSource.query(counterQuery);
+    const count = counter[0].count;
     const comments = await this.dataSource.query(selectQuery, [
       sortDirection,
       pageSize,
@@ -73,12 +87,11 @@ export class BloggerCommentsQueryRepository {
 
     await this.countLikesForComments(comments, userId);
     const commentsView = comments.map(this.mapCommentsToViewModel);
-    const count = commentsView.length;
     return {
-      pagesCount: Math.ceil(count / +pageSize),
+      pagesCount: Math.ceil(+count / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: count,
+      totalCount: +count,
       items: commentsView,
     };
   }
