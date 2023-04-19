@@ -1,7 +1,5 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { newestLikes, Post, PostDocument, PostViewModel } from './posts.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
 import { BansRepository } from '../bans/bans.repository';
 import { PostsLikesRepository } from '../likes/posts.likes.repository';
 import { BlogBansRepository } from '../bans/bans.blogs.repository';
