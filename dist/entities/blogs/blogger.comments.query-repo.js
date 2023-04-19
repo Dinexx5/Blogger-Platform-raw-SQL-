@@ -53,7 +53,7 @@ let BloggerCommentsQueryRepository = class BloggerCommentsQueryRepository {
         const allBlogs = await this.blogsRepository.findBlogsForUser(userId);
         const allPosts = await this.postsRepository.findPostsToGetComments(allBlogs);
         const subQuery = `${allPosts.length ? `"postId" IN (${allPosts})` : `false`}`;
-        const selectQuery = `SELECT c.*, ci.*, pi.*,
+        const selectQuery = `SELECT c.*, ci."userId", ci."userLogin", pi.*,
                                 CASE
                                  WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
                                  ELSE 1
