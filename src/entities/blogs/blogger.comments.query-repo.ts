@@ -54,7 +54,6 @@ export class BloggerCommentsQueryRepository {
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE ${subQuery}
@@ -64,18 +63,18 @@ export class BloggerCommentsQueryRepository {
                     LIMIT $2
                     OFFSET $3
                     `;
-    const counterQuery = `SELECT c.*, ci."userId", ci."userLogin", pi.*
-                               
+    const counterQuery = `SELECT COUNT(*)
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
-                    
                     LEFT JOIN "PostInfoForComment" pi
                     ON c."id" = pi."commentId"
                     WHERE ${subQuery}`;
 
     const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;
+    console.log(counterQuery);
+    console.log(counter);
     const comments = await this.dataSource.query(selectQuery, [
       sortDirection,
       pageSize,
