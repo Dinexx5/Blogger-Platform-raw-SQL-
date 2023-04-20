@@ -64,11 +64,8 @@ export class BloggerCommentsQueryRepository {
                     LIMIT $2
                     OFFSET $3
                     `;
-    const counterQuery = `SELECT c.*, ci."userId", ci."userLogin", pi.*,
-                                CASE
-                                 WHEN "${sortBy}" = LOWER("${sortBy}") THEN 2
-                                 ELSE 1
-                                END toOrder
+    const counterQuery = `SELECT c.*, ci."userId", ci."userLogin", pi.*
+                               
                     FROM "Comments" c
                     LEFT JOIN "CommentatorInfo" ci
                     ON c."id" = ci."commentId"
