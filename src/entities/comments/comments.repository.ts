@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from './comments.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { Ban, BanDocument } from './application/domain/bans.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { createBanModel } from './bans.models';
 
 @Injectable()
 export class BansRepository {
-  constructor(
-    @InjectModel(Ban.name) private banModel: Model<BanDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async findBanByUserId(userId: string) {
     const ban = await this.dataSource.query(

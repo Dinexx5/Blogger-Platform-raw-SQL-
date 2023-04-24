@@ -36,6 +36,7 @@ export class CommentsQueryRepository {
 
     const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
     const bannedComments = await this.bansRepository.getBannedComments();
+    console.log(bannedComments);
 
     const subQuery = `"id" ${bannedComments.length ? `NOT IN (${bannedComments})` : `IS NOT NULL`}
     AND "postId" = ${postId}`;

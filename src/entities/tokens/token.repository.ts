@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Token, TokenDocument } from './token.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { createTokenModel, tokenSqlModel } from './tokens.models';
 
 @Injectable()
 export class TokenRepository {
-  constructor(
-    @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async findToken(exp: string): Promise<tokenSqlModel | null> {
     const token = await this.dataSource.query(
@@ -29,7 +23,7 @@ export class TokenRepository {
                    ("issuedAt", "expiredAt", "deviceId", "deviceName", ip, "userId")
                    VALUES ($1, $2, $3, $4, $5, $6)
                    RETURNING *;`;
-    const token = await this.dataSource.query(tokenQuery, [
+    await this.dataSource.query(tokenQuery, [
       tokenDto.issuedAt,
       tokenDto.expiredAt,
       tokenDto.deviceId,
@@ -66,9 +60,5 @@ export class TokenRepository {
       [exp],
     );
     return token[0];
-  }
-
-  async save(instance: any) {
-    instance.save();
   }
 }

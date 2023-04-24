@@ -1,10 +1,10 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
-import { newestLikes, Post, PostDocument, PostViewModel } from './posts.schema';
 import { BansRepository } from '../bans/bans.repository';
 import { PostsLikesRepository } from '../likes/posts.likes.repository';
 import { BlogBansRepository } from '../bans/bans.blogs.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { NewestLikes, PostViewModel } from './posts.models';
 
 export class PostsQueryRepository {
   constructor(
@@ -93,7 +93,7 @@ export class PostsQueryRepository {
       const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
       post.likesCount = likesCount;
       post.dislikesCount = dislikesCount;
-      const newestLikes: newestLikes[] = [];
+      const newestLikes: NewestLikes[] = [];
       newestLikes.push(...threeLatestLikes);
       post.newestLikes = newestLikes;
     }
@@ -113,7 +113,7 @@ export class PostsQueryRepository {
     const dislikesCount = foundLikes.filter((like) => like.likeStatus === 'Dislike').length;
     post.likesCount = likesCount;
     post.dislikesCount = dislikesCount;
-    const newestLikes: newestLikes[] = [];
+    const newestLikes: NewestLikes[] = [];
     newestLikes.push(...threeLatestLikes);
     post.newestLikes = newestLikes;
   }

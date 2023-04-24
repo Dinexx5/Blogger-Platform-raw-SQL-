@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { Response } from 'express';
-import { PostViewModel } from './posts.schema';
 import { PostsService } from './posts.service';
 import { PostsQueryRepository } from './posts.query-repo';
 import { CommentsQueryRepository } from '../comments/comments.query-repo';
@@ -10,6 +9,7 @@ import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { GetUserGuard } from '../auth/guards/getuser.guard';
 import { CommentViewModel, CreateCommentModel, LikeInputModel } from '../comments/comments.models';
 import { isPostIdIntegerGuard } from '../auth/guards/param.postId.isinteger.guard';
+import { PostViewModel } from './posts.models';
 
 @Controller('posts')
 export class PostsController {

@@ -8,8 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogsModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const blogs_schema_1 = require("./domain/blogs.schema");
 const blogger_controller_1 = require("./blogger.controller");
 const blogs_service_1 = require("./blogs.service");
 const blogs_repository_1 = require("./blogs.repository");
@@ -28,8 +26,6 @@ const comments_module_1 = require("../comments/comments.module");
 const bans_repository_1 = require("../bans/bans.repository");
 const devices_module_1 = require("../devices/devices.module");
 const token_module_1 = require("../tokens/token.module");
-const bans_schema_1 = require("../bans/application/domain/bans.schema");
-const users_schema_1 = require("../users/users.schema");
 const cqrs_1 = require("@nestjs/cqrs");
 const ban_blog_use_case_1 = require("./application/use-cases/ban.blog.use-case");
 const bans_blogs_repository_1 = require("../bans/bans.blogs.repository");
@@ -38,7 +34,6 @@ const bans_users_for_blog_repository_1 = require("../bans/bans.users-for-blog.re
 const ban_user_for_blog_use_case_1 = require("./application/use-cases/ban.user.for.blog.use-case");
 const blogger_bans_query_repository_1 = require("./blogger.bans.query-repository");
 const blogger_comments_query_repo_1 = require("./blogger.comments.query-repo");
-const comments_schema_1 = require("../comments/comments.schema");
 let BlogsModule = class BlogsModule {
 };
 BlogsModule = __decorate([
@@ -51,12 +46,6 @@ BlogsModule = __decorate([
             comments_module_1.CommentsModule,
             devices_module_1.DevicesModule,
             token_module_1.TokensModule,
-            mongoose_1.MongooseModule.forFeature([{ name: blogs_schema_1.Blog.name, schema: blogs_schema_1.BlogSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: bans_schema_1.Ban.name, schema: bans_schema_1.BanSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: comments_schema_1.Comment.name, schema: comments_schema_1.CommentSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: users_schema_1.User.name, schema: users_schema_1.UserSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: bans_schema_1.BlogBan.name, schema: bans_schema_1.BlogBanSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: bans_schema_1.UserForBlogBan.name, schema: bans_schema_1.BanUserForBlogSchema }]),
         ],
         providers: [
             blogs_service_1.BlogsService,

@@ -1,9 +1,9 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
-import { PostViewModel } from './posts.schema';
 import { BansRepository } from '../bans/bans.repository';
 import { PostsLikesRepository } from '../likes/posts.likes.repository';
 import { BlogBansRepository } from '../bans/bans.blogs.repository';
 import { DataSource } from 'typeorm';
+import { PostViewModel } from './posts.models';
 export declare class PostsQueryRepository {
     protected bansRepository: BansRepository;
     protected postsLikesRepository: PostsLikesRepository;

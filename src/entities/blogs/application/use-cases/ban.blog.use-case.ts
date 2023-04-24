@@ -1,12 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../../posts/posts.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { BlogBan, BlogBanDocument } from '../../../bans/application/domain/bans.schema';
-import { Model } from 'mongoose';
 import { BanBlogModel } from '../../blogs.models';
 import { BlogBansRepository } from '../../../bans/bans.blogs.repository';
 import { BlogsRepository } from '../../blogs.repository';
-import { Blog, BlogDocument } from '../../domain/blogs.schema';
 import { NotFoundException } from '@nestjs/common';
 
 export class BanBlogCommand {
@@ -19,8 +15,6 @@ export class BansBlogUseCase implements ICommandHandler<BanBlogCommand> {
     protected blogsRepository: BlogsRepository,
     protected postsRepository: PostsRepository,
     protected blogBansRepository: BlogBansRepository,
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectModel(BlogBan.name) private blogBanModel: Model<BlogBanDocument>,
   ) {}
   async execute(command: BanBlogCommand): Promise<boolean> {
     const blogId = command.blogId;

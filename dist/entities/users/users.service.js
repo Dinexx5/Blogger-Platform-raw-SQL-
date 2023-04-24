@@ -31,23 +31,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const users_schema_1 = require("./users.schema");
 const users_repository_1 = require("./users.repository");
 const uuid_1 = require("uuid");
 const date_fns_1 = require("date-fns");
 const bcrypt = __importStar(require("bcrypt"));
 let UsersService = class UsersService {
-    constructor(usersRepository, userModel) {
+    constructor(usersRepository) {
         this.usersRepository = usersRepository;
-        this.userModel = userModel;
     }
     async createUser(inputModel) {
         const passwordHash = await this.generateHash(inputModel.password);
@@ -125,9 +118,7 @@ let UsersService = class UsersService {
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_1.InjectModel)(users_schema_1.User.name)),
-    __metadata("design:paramtypes", [users_repository_1.UsersRepository,
-        mongoose_2.Model])
+    __metadata("design:paramtypes", [users_repository_1.UsersRepository])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

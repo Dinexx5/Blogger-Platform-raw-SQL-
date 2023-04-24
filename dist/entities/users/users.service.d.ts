@@ -1,11 +1,8 @@
-import { Model } from 'mongoose';
-import { UserDocument } from './users.schema';
 import { UsersRepository } from './users.repository';
 import { CreateUserModel, NewPasswordModel, SaUserViewModel, UserFromSqlRepo } from './userModels';
 export declare class UsersService {
     protected usersRepository: UsersRepository;
-    private userModel;
-    constructor(usersRepository: UsersRepository, userModel: Model<UserDocument>);
+    constructor(usersRepository: UsersRepository);
     createUser(inputModel: CreateUserModel): Promise<SaUserViewModel>;
     deleteUserById(userId: string): Promise<boolean>;
     findUserByLoginOrEmail(login: string): Promise<UserFromSqlRepo | null>;

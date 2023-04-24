@@ -1,15 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import mongoose, { Model, ObjectId } from 'mongoose';
 import { DevicesRepository } from './devices.repository';
-import { Device, DeviceDocument, deviceViewModel } from './devices.schema';
-import { InjectModel } from '@nestjs/mongoose';
+import { deviceViewModel } from './devices.models';
 
 @Injectable()
 export class DevicesService {
-  constructor(
-    protected devicesRepository: DevicesRepository,
-    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
-  ) {}
+  constructor(protected devicesRepository: DevicesRepository) {}
   async createDevice(
     userId: string,
     ip: string,

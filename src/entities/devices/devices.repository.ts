@@ -1,18 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceDocument } from './devices.schema';
-import { createBanModel } from '../bans/bans.models';
 import { createDeviceModel } from './devices.models';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DevicesRepository {
-  constructor(
-    @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async createDevice(deviceDto: createDeviceModel) {
     const deviceQuery = `INSERT INTO "Devices"
                    ("userId", ip, title, "lastActiveDate", "deviceId")

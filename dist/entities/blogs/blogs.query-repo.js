@@ -94,7 +94,7 @@ let BlogsQueryRepository = class BlogsQueryRepository {
       `, [blogId]);
         if (!foundBlog.length)
             return null;
-        if (allBannedBlogs.includes(foundBlog[0].id))
+        if (allBannedBlogs.includes(foundBlog[0].id.toString()))
             return null;
         return this.mapFoundBlogToBlogViewModel(foundBlog[0]);
     }

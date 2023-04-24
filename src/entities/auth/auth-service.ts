@@ -1,15 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { Token, TokenDocument } from '../tokens/token.schema';
-import mongoose, { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { TokenRepository } from '../tokens/token.repository';
 import { DevicesService } from '../devices/devices.service';
 import { v4 as uuidv4 } from 'uuid';
 import { add, addDays } from 'date-fns';
 import { EmailAdapter } from '../../adapters/email.adapter';
-import { Device, DeviceDocument } from '../devices/devices.schema';
 import { DevicesRepository } from '../devices/devices.repository';
 import { CreateUserModel, NewPasswordModel } from '../users/userModels';
 import * as bcrypt from 'bcrypt';

@@ -1,6 +1,7 @@
-import { IsBoolean, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { IsBlogAttached } from '../../shared/decorators/validation/blog-bound.decorator';
 import { IsUserExists } from '../../shared/decorators/validation/user-exists.decorator';
+import { Transform } from 'class-transformer';
 
 export class blogParamModel {
   @IsString()
@@ -54,4 +55,36 @@ export class BlogSAViewModel {
     public blogOwnerInfo: object,
     public banInfo: object,
   ) {}
+}
+
+export class createBlogModel {
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 15)
+  @Transform(({ value }) => value?.trim?.())
+  name: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 500)
+  @Transform(({ value }) => value?.trim?.())
+  description: string;
+  @IsNotEmpty()
+  @IsUrl()
+  websiteUrl: string;
+}
+
+export class updateBlogModel {
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 15)
+  @Transform(({ value }) => value?.trim?.())
+  name: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(0, 500)
+  @Transform(({ value }) => value?.trim?.())
+  description: string;
+  @IsNotEmpty()
+  @IsUrl()
+  websiteUrl: string;
 }

@@ -1,15 +1,11 @@
 import { UsersRepository } from '../../../users/users.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { BanModel } from '../../../users/userModels';
 import { BansRepository } from '../../bans.repository';
-import { Ban, BanDocument } from '../domain/bans.schema';
 import { DevicesRepository } from '../../../devices/devices.repository';
 import { TokenRepository } from '../../../tokens/token.repository';
 import { BlogsRepository } from '../../../blogs/blogs.repository';
 import { PostsRepository } from '../../../posts/posts.repository';
 import { CommentsRepository } from '../../../comments/comments.repository';
-import { User, UserDocument } from '../../../users/users.schema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 export class BansUserCommand {

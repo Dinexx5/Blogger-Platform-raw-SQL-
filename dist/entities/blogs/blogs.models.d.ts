@@ -32,3 +32,13 @@ export declare class BlogSAViewModel {
     banInfo: object;
     constructor(id: string, name: string, description: string, isMembership: boolean, websiteUrl: string, createdAt: string, blogOwnerInfo: object, banInfo: object);
 }
+export declare class createBlogModel {
+    name: string;
+    description: string;
+    websiteUrl: string;
+}
+export declare class updateBlogModel {
+    name: string;
+    description: string;
+    websiteUrl: string;
+}

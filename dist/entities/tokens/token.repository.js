@@ -14,14 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TokenRepository = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("mongoose");
-const mongoose_2 = require("@nestjs/mongoose");
-const token_schema_1 = require("./token.schema");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let TokenRepository = class TokenRepository {
-    constructor(tokenModel, dataSource) {
-        this.tokenModel = tokenModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     async findToken(exp) {
@@ -37,7 +33,7 @@ let TokenRepository = class TokenRepository {
                    ("issuedAt", "expiredAt", "deviceId", "deviceName", ip, "userId")
                    VALUES ($1, $2, $3, $4, $5, $6)
                    RETURNING *;`;
-        const token = await this.dataSource.query(tokenQuery, [
+        await this.dataSource.query(tokenQuery, [
             tokenDto.issuedAt,
             tokenDto.expiredAt,
             tokenDto.deviceId,
@@ -69,16 +65,11 @@ let TokenRepository = class TokenRepository {
       `, [exp]);
         return token[0];
     }
-    async save(instance) {
-        instance.save();
-    }
 };
 TokenRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)(token_schema_1.Token.name)),
-    __param(1, (0, typeorm_1.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_1.Model,
-        typeorm_2.DataSource])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], TokenRepository);
 exports.TokenRepository = TokenRepository;
 //# sourceMappingURL=token.repository.js.map

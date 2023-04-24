@@ -1,10 +1,10 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
 import { Response } from 'express';
-import { PostViewModel } from './posts.schema';
 import { PostsService } from './posts.service';
 import { PostsQueryRepository } from './posts.query-repo';
 import { CommentsQueryRepository } from '../comments/comments.query-repo';
 import { CreateCommentModel, LikeInputModel } from '../comments/comments.models';
+import { PostViewModel } from './posts.models';
 export declare class PostsController {
     protected postsService: PostsService;
     protected postsQueryRepository: PostsQueryRepository;

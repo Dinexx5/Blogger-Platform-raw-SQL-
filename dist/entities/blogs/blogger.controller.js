@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloggerController = void 0;
 const common_1 = require("@nestjs/common");
 const blogs_service_1 = require("./blogs.service");
-const blogs_schema_1 = require("./domain/blogs.schema");
-const posts_schema_1 = require("../posts/posts.schema");
 const posts_service_1 = require("../posts/posts.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const blogs_models_1 = require("./blogs.models");
@@ -25,6 +23,7 @@ const blogs_query_repo_1 = require("./blogs.query-repo");
 const blogger_comments_query_repo_1 = require("./blogger.comments.query-repo");
 const param_blogId_integer_guard_1 = require("../auth/guards/param.blogId.integer.guard");
 const param_postId_isinteger_guard_1 = require("../auth/guards/param.postId.isinteger.guard");
+const posts_models_1 = require("../posts/posts.models");
 let BloggerController = class BloggerController {
     constructor(blogsService, postsService, blogsQueryRepo, bloggerCommentsQueryRepo) {
         this.blogsService = blogsService;
@@ -89,7 +88,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [blogs_schema_1.createBlogModel, Object]),
+    __metadata("design:paramtypes", [blogs_models_1.createBlogModel, Object]),
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "createBlog", null);
 __decorate([
@@ -100,7 +99,7 @@ __decorate([
     __param(2, (0, common_1.Res)()),
     __param(3, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [blogs_schema_1.updateBlogModel,
+    __metadata("design:paramtypes", [blogs_models_1.updateBlogModel,
         blogs_models_1.blogParamModel, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "updateBlog", null);
@@ -122,7 +121,7 @@ __decorate([
     __param(2, (0, common_1.Res)()),
     __param(3, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [posts_schema_1.createPostModel,
+    __metadata("design:paramtypes", [posts_models_1.createPostModel,
         blogs_models_1.blogParamModel, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "createPost", null);
@@ -134,7 +133,7 @@ __decorate([
     __param(2, (0, common_1.Res)()),
     __param(3, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [posts_schema_1.updatePostModel,
+    __metadata("design:paramtypes", [posts_models_1.updatePostModel,
         blogs_models_1.blogAndPostParamModel, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BloggerController.prototype, "updatePost", null);

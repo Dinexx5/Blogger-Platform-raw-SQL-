@@ -12,7 +12,6 @@ const configModule = config_1.ConfigModule.forRoot({ isGlobal: true });
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const mongoose_1 = require("@nestjs/mongoose");
 const users_module_1 = require("./entities/users/users.module");
 const auth_module_1 = require("./entities/auth/auth.module");
 const blogs_module_1 = require("./entities/blogs/blogs.module");
@@ -27,7 +26,6 @@ AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             configModule,
-            mongoose_1.MongooseModule.forRoot(process.env.MONGO_URL),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: process.env.SQL_HOST_NAME,

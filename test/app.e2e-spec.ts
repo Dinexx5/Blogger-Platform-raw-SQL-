@@ -5,8 +5,8 @@ import { AppModule } from './../src/app.module';
 import { setupApp } from '../src/setup.app';
 import { SaUserViewModel } from '../src/entities/users/userModels';
 import { BlogViewModel } from '../src/entities/blogs/blogs.models';
-import { PostViewModel } from '../src/entities/posts/posts.schema';
 import { CommentViewModel } from '../src/entities/comments/comments.models';
+import { PostViewModel } from '../src/entities/posts/posts.models';
 
 jest.setTimeout(120000);
 
@@ -194,7 +194,7 @@ describe('Blogger (e2e)', () => {
         })
         .expect(204);
 
-      await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
+      const responseO = await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
     });
 
     it('should return comment for unbanned user, change user instance', async () => {
@@ -375,6 +375,187 @@ describe('Blogger (e2e)', () => {
       const posts = postsRes.body;
 
       expect(posts.items).toHaveLength(1);
+    });
+  });
+
+  describe('ban user for blog tests', () => {
+    let blog: BlogViewModel;
+    let post: PostViewModel;
+    let comment: CommentViewModel;
+    let user: SaUserViewModel;
+    let bannedUser;
+    let validAccessToken: { accessToken: string };
+    let validAccessToken2: { accessToken: string };
+
+    beforeAll(async () => {
+      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+
+      const response00 = await request(app.getHttpServer())
+        .post(`/sa/users`)
+        .auth('admin', 'qwerty', { type: 'basic' })
+        .send({
+          login: 'govnokoder',
+          password: 'qwerty321',
+          email: 'qwertyuiop@jive.com',
+        })
+        .expect(201);
+      user = response00.body;
+      expect(user).toEqual({
+        id: expect.any(String),
+        login: 'govnokoder',
+        email: 'qwertyuiop@jive.com',
+        createdAt: expect.any(String),
+        banInfo: {
+          isBanned: false,
+          banDate: null,
+          banReason: null,
+        },
+      });
+      const banResponse = await request(app.getHttpServer())
+        .post(`/sa/users`)
+        .auth('admin', 'qwerty', { type: 'basic' })
+        .send({
+          login: 'bannedUser',
+          password: 'qwerty321',
+          email: 'qwerty@live.com',
+        });
+      bannedUser = banResponse.body;
+
+      const responseToken = await request(app.getHttpServer())
+        .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
+        .send({ loginOrEmail: 'govnokoder', password: 'qwerty321' })
+        .expect(200);
+      validAccessToken = responseToken.body;
+      expect(validAccessToken).toEqual({ accessToken: expect.any(String) });
+
+      const responseToken2 = await request(app.getHttpServer())
+        .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
+        .send({ loginOrEmail: 'bannedUser', password: 'qwerty321' })
+        .expect(200);
+      validAccessToken2 = responseToken2.body;
+      expect(validAccessToken2).toEqual({ accessToken: expect.any(String) });
+
+      const responseBlog = await request(app.getHttpServer())
+        .post(`/blogger/blogs/`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .send({
+          name: 'BlogGovnokoda',
+          description: 'Here we make some shitposts pretending to know how to code',
+          websiteUrl: 'https://www.mongoose.com',
+        })
+        .expect(201);
+      blog = responseBlog.body;
+      expect(blog).toEqual({
+        id: expect.any(String),
+        isMembership: false,
+        name: 'BlogGovnokoda',
+        description: 'Here we make some shitposts pretending to know how to code',
+        websiteUrl: 'https://www.mongoose.com',
+        createdAt: expect.any(String),
+      });
+
+      const responsePost = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blog.id}/posts`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .send({
+          title: 'string113231423',
+          shortDescription: 'fasdfdsfsd',
+          content: 'strifdasdfsadfsadfng',
+        })
+        .expect(201);
+      post = responsePost.body;
+
+      const responseComment = await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(validAccessToken2.accessToken, { type: 'bearer' })
+        .send({
+          content: 'strifdasdfsadfsadfngdasdasdadad',
+        })
+        .expect(201);
+      comment = responseComment.body;
+      expect(comment).toEqual({
+        id: expect.any(String),
+        content: expect.any(String),
+        commentatorInfo: {
+          userId: bannedUser.id.toString(),
+          userLogin: 'bannedUser',
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: expect.any(Number),
+          dislikesCount: expect.any(Number),
+          myStatus: expect.any(String),
+        },
+      });
+    });
+
+    it('should ban user and show ban', async () => {
+      const postComments = await request(app.getHttpServer())
+        .get(`/posts/${post.id}/comments`)
+        .expect(200);
+
+      expect(postComments.body.items).toHaveLength(1);
+
+      await request(app.getHttpServer())
+        .put(`/blogger/users/${bannedUser.id}/ban`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .send({
+          isBanned: true,
+          banReason: 'stringstringstringst',
+          blogId: blog.id,
+        })
+        .expect(204);
+      const responseForGetBans = await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${blog.id}`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .expect(200);
+      const bans = responseForGetBans.body.items;
+      expect(bans).toHaveLength(1);
+      expect(bans[0]).toEqual({
+        id: bannedUser.id.toString(),
+        login: bannedUser.login,
+        banInfo: {
+          isBanned: true,
+          banDate: expect.any(String),
+          banReason: expect.any(String),
+        },
+      });
+    });
+    it('should not allow for banned user to comment', async () => {
+      await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(validAccessToken2.accessToken, { type: 'bearer' })
+        .send({
+          content: '33333333333333333333333',
+        })
+        .expect(403);
+    });
+    it('should unban user', async () => {
+      await request(app.getHttpServer())
+        .put(`/blogger/users/${bannedUser.id}/ban`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .send({
+          isBanned: false,
+          banReason: 'stringstringstringst',
+          blogId: blog.id,
+        })
+        .expect(204);
+      const responseForGetBans = await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${blog.id}`)
+        .auth(validAccessToken.accessToken, { type: 'bearer' })
+        .expect(200);
+      expect(responseForGetBans.body.items).toEqual([]);
+    });
+    it('unbanned user should be able to comment', async () => {
+      await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(validAccessToken2.accessToken, { type: 'bearer' })
+        .send({
+          content: '33333333333333333333333',
+        })
+        .expect(201);
     });
   });
 });

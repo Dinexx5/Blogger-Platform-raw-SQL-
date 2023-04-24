@@ -1,7 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { User, UserDocument } from './users.schema';
+import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { add, addDays } from 'date-fns';
@@ -10,10 +7,7 @@ import { CreateUserModel, NewPasswordModel, SaUserViewModel, UserFromSqlRepo } f
 
 @Injectable()
 export class UsersService {
-  constructor(
-    protected usersRepository: UsersRepository,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  constructor(protected usersRepository: UsersRepository) {}
 
   async createUser(inputModel: CreateUserModel): Promise<SaUserViewModel> {
     const passwordHash = await this.generateHash(inputModel.password);

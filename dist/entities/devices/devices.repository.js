@@ -14,14 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DevicesRepository = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("mongoose");
-const mongoose_2 = require("@nestjs/mongoose");
-const devices_schema_1 = require("./devices.schema");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let DevicesRepository = class DevicesRepository {
-    constructor(deviceModel, dataSource) {
-        this.deviceModel = deviceModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     async createDevice(deviceDto) {
@@ -87,10 +83,8 @@ let DevicesRepository = class DevicesRepository {
 };
 DevicesRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)(devices_schema_1.Device.name)),
-    __param(1, (0, typeorm_1.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_1.Model,
-        typeorm_2.DataSource])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], DevicesRepository);
 exports.DevicesRepository = DevicesRepository;
 //# sourceMappingURL=devices.repository.js.map

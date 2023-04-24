@@ -8,19 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BansBlogUseCase = exports.BanBlogCommand = void 0;
 const cqrs_1 = require("@nestjs/cqrs");
 const posts_repository_1 = require("../../../posts/posts.repository");
-const mongoose_1 = require("@nestjs/mongoose");
-const bans_schema_1 = require("../../../bans/application/domain/bans.schema");
-const mongoose_2 = require("mongoose");
 const bans_blogs_repository_1 = require("../../../bans/bans.blogs.repository");
 const blogs_repository_1 = require("../../blogs.repository");
-const blogs_schema_1 = require("../../domain/blogs.schema");
 const common_1 = require("@nestjs/common");
 class BanBlogCommand {
     constructor(blogId, inputModel) {
@@ -30,12 +23,10 @@ class BanBlogCommand {
 }
 exports.BanBlogCommand = BanBlogCommand;
 let BansBlogUseCase = class BansBlogUseCase {
-    constructor(blogsRepository, postsRepository, blogBansRepository, blogModel, blogBanModel) {
+    constructor(blogsRepository, postsRepository, blogBansRepository) {
         this.blogsRepository = blogsRepository;
         this.postsRepository = postsRepository;
         this.blogBansRepository = blogBansRepository;
-        this.blogModel = blogModel;
-        this.blogBanModel = blogBanModel;
     }
     async execute(command) {
         const blogId = command.blogId;
@@ -64,13 +55,9 @@ let BansBlogUseCase = class BansBlogUseCase {
 };
 BansBlogUseCase = __decorate([
     (0, cqrs_1.CommandHandler)(BanBlogCommand),
-    __param(3, (0, mongoose_1.InjectModel)(blogs_schema_1.Blog.name)),
-    __param(4, (0, mongoose_1.InjectModel)(bans_schema_1.BlogBan.name)),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository,
         posts_repository_1.PostsRepository,
-        bans_blogs_repository_1.BlogBansRepository,
-        mongoose_2.Model,
-        mongoose_2.Model])
+        bans_blogs_repository_1.BlogBansRepository])
 ], BansBlogUseCase);
 exports.BansBlogUseCase = BansBlogUseCase;
 //# sourceMappingURL=ban.blog.use-case.js.map

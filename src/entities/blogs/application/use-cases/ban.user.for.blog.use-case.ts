@@ -1,15 +1,8 @@
 import { UsersRepository } from '../../../users/users.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { BanUserModelForBlog } from '../../../users/userModels';
 import { BlogsRepository } from '../../../blogs/blogs.repository';
 import { PostsRepository } from '../../../posts/posts.repository';
-import { User, UserDocument } from '../../../users/users.schema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  UserForBlogBan,
-  UserForBlogBanDocument,
-} from '../../../bans/application/domain/bans.schema';
 import { UsersBansForBlogRepository } from '../../../bans/bans.users-for-blog.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 

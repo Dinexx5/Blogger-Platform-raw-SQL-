@@ -73,8 +73,6 @@ export class BloggerCommentsQueryRepository {
 
     const counter = await this.dataSource.query(counterQuery);
     const count = counter[0].count;
-    console.log(counterQuery);
-    console.log(counter);
     const comments = await this.dataSource.query(selectQuery, [
       sortDirection,
       pageSize,

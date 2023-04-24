@@ -5,9 +5,9 @@ import { paginatedViewModel } from '../../shared/models/pagination';
 import { Response } from 'express';
 import { GetUserGuard } from '../auth/guards/getuser.guard';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
-import { PostViewModel } from '../posts/posts.schema';
 import { BlogViewModel } from './blogs.models';
 import { isBlogIdIntegerGuard } from '../auth/guards/param.blogId.integer.guard';
+import { PostViewModel } from '../posts/posts.models';
 
 @Controller('blogs')
 export class BlogsController {

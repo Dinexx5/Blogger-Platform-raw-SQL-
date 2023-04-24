@@ -14,9 +14,6 @@ const access_jwt_strategy_1 = require("./strategies/access.jwt.strategy");
 const local_strategy_1 = require("./strategies/local.strategy");
 const users_module_1 = require("../users/users.module");
 const auth_service_1 = require("./auth-service");
-const mongoose_1 = require("@nestjs/mongoose");
-const token_schema_1 = require("../tokens/token.schema");
-const devices_schema_1 = require("../devices/devices.schema");
 const email_adapter_1 = require("../../adapters/email.adapter");
 const refresh_jwt_strategy_1 = require("./strategies/refresh.jwt.strategy");
 const devices_module_1 = require("../devices/devices.module");
@@ -24,15 +21,11 @@ const auth_controller_1 = require("./auth.controller");
 const attempts_module_1 = require("../attempts/attempts.module");
 const token_module_1 = require("../tokens/token.module");
 const bans_repository_1 = require("../bans/bans.repository");
-const bans_schema_1 = require("../bans/application/domain/bans.schema");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forFeature([{ name: token_schema_1.Token.name, schema: token_schema_1.TokenSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: devices_schema_1.Device.name, schema: devices_schema_1.DeviceSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: bans_schema_1.Ban.name, schema: bans_schema_1.BanSchema }]),
             users_module_1.UsersModule,
             passport_1.PassportModule,
             devices_module_1.DevicesModule,

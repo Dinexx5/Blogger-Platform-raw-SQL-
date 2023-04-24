@@ -16,7 +16,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     configModule,
-    MongooseModule.forRoot(process.env.MONGO_URL),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.SQL_HOST_NAME,

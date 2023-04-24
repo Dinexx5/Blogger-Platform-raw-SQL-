@@ -14,14 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BansRepository = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const bans_schema_1 = require("./application/domain/bans.schema");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 let BansRepository = class BansRepository {
-    constructor(banModel, dataSource) {
-        this.banModel = banModel;
+    constructor(dataSource) {
         this.dataSource = dataSource;
     }
     async findBanByUserId(userId) {
@@ -106,10 +102,8 @@ let BansRepository = class BansRepository {
 };
 BansRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(bans_schema_1.Ban.name)),
-    __param(1, (0, typeorm_1.InjectDataSource)()),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        typeorm_2.DataSource])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __metadata("design:paramtypes", [typeorm_2.DataSource])
 ], BansRepository);
 exports.BansRepository = BansRepository;
 //# sourceMappingURL=bans.repository.js.map

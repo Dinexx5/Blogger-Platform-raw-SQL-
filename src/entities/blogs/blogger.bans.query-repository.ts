@@ -1,5 +1,4 @@
 import { paginatedViewModel, paginationQuerys } from '../../shared/models/pagination';
-import { UserForBlogBanDocument } from '../bans/application/domain/bans.schema';
 import { BannedForBlogUserViewModel } from '../users/userModels';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
@@ -11,7 +10,7 @@ export class BloggerBansQueryRepository {
     protected blogsRepository: BlogsRepository,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
-  mapFoundBansToViewModel(ban: UserForBlogBanDocument): BannedForBlogUserViewModel {
+  mapFoundBansToViewModel(ban): BannedForBlogUserViewModel {
     return {
       id: ban.userId.toString(),
       login: ban.login,

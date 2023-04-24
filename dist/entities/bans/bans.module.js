@@ -8,9 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BansModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
 const ban_user_use_case_1 = require("./application/use-cases/ban.user.use.case.");
-const bans_schema_1 = require("./application/domain/bans.schema");
 const bans_repository_1 = require("../bans/bans.repository");
 const bans_controller_1 = require("./bans.controller");
 const users_module_1 = require("../users/users.module");
@@ -20,7 +18,6 @@ const token_module_1 = require("../tokens/token.module");
 const devices_module_1 = require("../devices/devices.module");
 const posts_module_1 = require("../posts/posts.module");
 const comments_module_1 = require("../comments/comments.module");
-const users_schema_1 = require("../users/users.schema");
 const cqrs_1 = require("@nestjs/cqrs");
 let BansModule = class BansModule {
 };
@@ -35,8 +32,6 @@ BansModule = __decorate([
             comments_module_1.CommentsModule,
             token_module_1.TokensModule,
             devices_module_1.DevicesModule,
-            mongoose_1.MongooseModule.forFeature([{ name: bans_schema_1.Ban.name, schema: bans_schema_1.BanSchema }]),
-            mongoose_1.MongooseModule.forFeature([{ name: users_schema_1.User.name, schema: users_schema_1.UserSchema }]),
         ],
         providers: [ban_user_use_case_1.BansUserUseCase, bans_repository_1.BansRepository],
         controllers: [bans_controller_1.BansController],

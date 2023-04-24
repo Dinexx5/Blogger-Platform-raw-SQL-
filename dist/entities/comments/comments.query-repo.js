@@ -43,6 +43,7 @@ let CommentsQueryRepository = class CommentsQueryRepository {
         const { sortDirection = 'desc', sortBy = 'createdAt', pageNumber = 1, pageSize = 10 } = query;
         const skippedCommentsNumber = (+pageNumber - 1) * +pageSize;
         const bannedComments = await this.bansRepository.getBannedComments();
+        console.log(bannedComments);
         const subQuery = `"id" ${bannedComments.length ? `NOT IN (${bannedComments})` : `IS NOT NULL`}
     AND "postId" = ${postId}`;
         const selectQuery = `SELECT c.*, pi."postId", ci."userId", ci."userLogin",

@@ -8,22 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuperAdminBlogsService = void 0;
 const blogs_repository_1 = require("./blogs.repository");
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const blogs_schema_1 = require("./domain/blogs.schema");
-const mongoose_2 = require("mongoose");
 const users_repository_1 = require("../users/users.repository");
 let SuperAdminBlogsService = class SuperAdminBlogsService {
-    constructor(blogsRepository, usersRepository, blogModel) {
+    constructor(blogsRepository, usersRepository) {
         this.blogsRepository = blogsRepository;
         this.usersRepository = usersRepository;
-        this.blogModel = blogModel;
     }
     async bindBlog(blogId, userId) {
         const user = await this.usersRepository.findUserById(userId);
@@ -32,10 +25,8 @@ let SuperAdminBlogsService = class SuperAdminBlogsService {
 };
 SuperAdminBlogsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, mongoose_1.InjectModel)(blogs_schema_1.Blog.name)),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository,
-        users_repository_1.UsersRepository,
-        mongoose_2.Model])
+        users_repository_1.UsersRepository])
 ], SuperAdminBlogsService);
 exports.SuperAdminBlogsService = SuperAdminBlogsService;
 //# sourceMappingURL=sa.blogs.service.js.map

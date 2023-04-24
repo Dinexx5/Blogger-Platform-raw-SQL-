@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { User, UserDocument } from './users.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UserFromSqlRepo } from './userModels';
 
 @Injectable()
 export class UsersRepository {

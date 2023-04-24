@@ -8,94 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostViewModel = exports.updatePostModel = exports.createPostModel = exports.PostSchema = exports.Post = exports.ExtendedLikesInfo = exports.newestLikes = void 0;
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = __importDefault(require("mongoose"));
+exports.PostViewModel = exports.updatePostModel = exports.createPostModel = exports.NewestLikes = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
-let newestLikes = class newestLikes {
-};
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], newestLikes.prototype, "addedAt", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], newestLikes.prototype, "userId", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], newestLikes.prototype, "login", void 0);
-newestLikes = __decorate([
-    (0, mongoose_1.Schema)()
-], newestLikes);
-exports.newestLikes = newestLikes;
-let ExtendedLikesInfo = class ExtendedLikesInfo {
-};
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Number)
-], ExtendedLikesInfo.prototype, "likesCount", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Number)
-], ExtendedLikesInfo.prototype, "dislikesCount", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], ExtendedLikesInfo.prototype, "myStatus", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Array)
-], ExtendedLikesInfo.prototype, "newestLikes", void 0);
-ExtendedLikesInfo = __decorate([
-    (0, mongoose_1.Schema)()
-], ExtendedLikesInfo);
-exports.ExtendedLikesInfo = ExtendedLikesInfo;
-let Post = class Post {
-};
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", mongoose_2.default.Schema.Types.ObjectId)
-], Post.prototype, "_id", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true }),
-    __metadata("design:type", String)
-], Post.prototype, "title", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true }),
-    __metadata("design:type", String)
-], Post.prototype, "shortDescription", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true }),
-    __metadata("design:type", String)
-], Post.prototype, "content", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Post.prototype, "blogId", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Post.prototype, "blogName", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Post.prototype, "createdAt", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", ExtendedLikesInfo)
-], Post.prototype, "extendedLikesInfo", void 0);
-Post = __decorate([
-    (0, mongoose_1.Schema)()
-], Post);
-exports.Post = Post;
-exports.PostSchema = mongoose_1.SchemaFactory.createForClass(Post);
+class NewestLikes {
+}
+exports.NewestLikes = NewestLikes;
 class createPostModel {
 }
 __decorate([
@@ -157,4 +76,4 @@ class PostViewModel {
     }
 }
 exports.PostViewModel = PostViewModel;
-//# sourceMappingURL=posts.schema.js.map
+//# sourceMappingURL=posts.models.js.map

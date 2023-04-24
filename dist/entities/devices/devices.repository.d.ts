@@ -1,11 +1,8 @@
-import { Model } from 'mongoose';
-import { DeviceDocument } from './devices.schema';
 import { createDeviceModel } from './devices.models';
 import { DataSource } from 'typeorm';
 export declare class DevicesRepository {
-    private deviceModel;
     protected dataSource: DataSource;
-    constructor(deviceModel: Model<DeviceDocument>, dataSource: DataSource);
+    constructor(dataSource: DataSource);
     createDevice(deviceDto: createDeviceModel): Promise<void>;
     findSessions(userId: string): Promise<any>;
     deleteDevicesForBan(userId: string): Promise<void>;

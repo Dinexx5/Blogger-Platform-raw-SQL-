@@ -1,21 +1,12 @@
 import { PostsRepository } from './posts.repository';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import {
-  createPostModel,
-  Post,
-  PostDocument,
-  PostViewModel,
-  updatePostModel,
-} from './posts.schema';
 import { CommentsService } from '../comments/comments.service';
 import { UsersRepository } from '../users/users.repository';
 import { BlogsRepository } from '../blogs/blogs.repository';
-import { PostLike, PostLikeDocument } from '../likes/posts.like.schema';
 import { PostsLikesRepository } from '../likes/posts.likes.repository';
 import { UsersBansForBlogRepository } from '../bans/bans.users-for-blog.repository';
 import { CommentViewModel, CreateCommentModel } from '../comments/comments.models';
+import { createPostModel, PostViewModel, updatePostModel } from './posts.models';
 
 @Injectable()
 export class PostsService {

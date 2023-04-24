@@ -1,17 +1,13 @@
 import { BlogsRepository } from './blogs.repository';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, createBlogModel, updateBlogModel } from './domain/blogs.schema';
-import mongoose, { Model } from 'mongoose';
 import { UsersRepository } from '../users/users.repository';
-import { BlogViewModel } from './blogs.models';
+import { BlogViewModel, createBlogModel, updateBlogModel } from './blogs.models';
 
 @Injectable()
 export class BlogsService {
   constructor(
     protected blogsRepository: BlogsRepository,
     protected usersRepository: UsersRepository,
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
   ) {}
 
   async createBlog(inputModel: createBlogModel, userId: string): Promise<BlogViewModel> {

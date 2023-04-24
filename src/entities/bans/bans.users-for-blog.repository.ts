@@ -1,17 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import {
-  Ban,
-  BanDocument,
-  BlogBan,
-  BlogBanDocument,
-  UserForBlogBan,
-  UserForBlogBanDocument,
-} from './application/domain/bans.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { createBanModel } from './bans.models';
 
 @Injectable()
 export class UsersBansForBlogRepository {

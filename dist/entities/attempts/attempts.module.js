@@ -8,15 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttemptsModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
 const attempts_repository_1 = require("./attempts.repository");
-const attempts_schema_1 = require("./attempts.schema");
 const rate_limit_guard_1 = require("../auth/guards/rate-limit.guard");
 let AttemptsModule = class AttemptsModule {
 };
 AttemptsModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: attempts_schema_1.Attempt.name, schema: attempts_schema_1.AttemptSchema }])],
+        imports: [],
         providers: [attempts_repository_1.AttemptsRepository, rate_limit_guard_1.RateLimitGuard],
         exports: [attempts_repository_1.AttemptsRepository, rate_limit_guard_1.RateLimitGuard],
     })

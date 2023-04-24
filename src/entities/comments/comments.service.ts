@@ -1,10 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { Comment, CommentDocument } from './comments.schema';
 import { CommentsRepository } from './comments.repository';
 import { UsersRepository } from '../users/users.repository';
-import { CommentLike, CommentLikeDocument } from '../likes/comments.like.schema';
 import { CommentsLikesRepository } from '../likes/comments.likes.repository';
 import { CommentViewModel, CreateCommentModel } from './comments.models';
 import { PostsRepository } from '../posts/posts.repository';
