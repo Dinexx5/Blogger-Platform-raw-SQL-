@@ -4,7 +4,7 @@ import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './shared/exceptions/exceptions.filter';
 
-export function setupApp(app: INestApplication, globalPrefix: string) {
+export function setupAppForTests(app: INestApplication, globalPrefix: string) {
   app.enableCors({});
   app.use(cookieParser());
   app.setGlobalPrefix(globalPrefix);

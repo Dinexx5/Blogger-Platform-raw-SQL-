@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { setupApp } from '../src/setup.app';
+import { setupAppForTests } from '../src/setupAppForTests';
 import { SaUserViewModel } from '../src/entities/users/userModels';
 import { BlogViewModel } from '../src/entities/blogs/blogs.models';
 import { CommentViewModel } from '../src/entities/comments/comments.models';
@@ -19,7 +19,7 @@ describe('Blogger (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app = setupApp(app, '');
+    app = setupAppForTests(app, '');
     await app.init();
   });
   afterAll(async () => {

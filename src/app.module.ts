@@ -3,7 +3,6 @@ const configModule = ConfigModule.forRoot({ isGlobal: true });
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './entities/users/users.module';
 import { AuthModule } from './entities/auth/auth.module';
 import { BlogsModule } from './entities/blogs/blogs.module';

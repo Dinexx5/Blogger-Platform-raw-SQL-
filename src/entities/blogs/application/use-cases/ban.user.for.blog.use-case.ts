@@ -56,9 +56,7 @@ export class BanUserForBlogUseCase implements ICommandHandler<BanUserForBlogComm
       inputModel.blogId,
       userId,
     );
-    if (!ban) {
-      return;
-    }
+    if (!ban) return;
     await this.usersBansForBlogsRepository.unbanUser(userId, inputModel.blogId);
   }
 }
